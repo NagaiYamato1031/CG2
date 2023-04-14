@@ -52,6 +52,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// クライアント領域を元に実際のサイズに wrc を変更してもらう
 	AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
 
+	///////////////////////////////
+
+
 	//// ウィンドウを生成 ////
 	
 	//ウィンドウの生成
@@ -74,6 +77,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	////////////////////////////////////
 
+
+	//// メインループ ////
+
 	MSG msg{};
 	// ウィンドウの×ボタンが押されるまでループ
 	while (msg.message != WM_QUIT){
@@ -87,7 +93,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		}
 	}
 
-
+	//////////////////////
 
 	return 0;
 }
