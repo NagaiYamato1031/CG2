@@ -122,6 +122,25 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 #pragma endregion
 
+#pragma region DebugLayer
+
+#ifdef _DEBUG
+
+	ID3D12Debug1* debugController = nullptr;
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+		// デバッグレイヤーを有効化する
+		debugController->EnableDebugLayer();
+		// さらに GPU 側でもチェックを行うようにする
+		debugController->SetEnableGPUBasedValidation(TRUE);
+	}
+
+#endif // _DEBUG
+
+
+#pragma endregion
+
+#pragma region DirectX12 の初期化
+
 #pragma region DXGIFactory の生成
 
 	// DXGIファクトリーの生成
@@ -188,6 +207,54 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// 初期化完了のログを出す
 	Log("Complete create D3D12Device!!!\n");
 
+#pragma endregion
+
+#pragma region エラー・警告がある場合に停止させる
+
+#ifdef _DEBUG
+	
+	ID3D12InfoQueue* infoQueue = nullptr;
+	if (SUCCEEDED(device->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
+		// やばいエラー時に止まる
+		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
+		// エラー時に止まる
+		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
+		// 警告時に止まる
+		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+
+#pragma region エラーと警告の抑制
+
+		/// 抑制するメッセージの ID
+		D3D12_MESSAGE_ID denyIDs[] = {
+			// Windows11 での DXGI デバッグレイヤート DX12 デバッグレイヤーの相互作用バグによるエラーメッセージ
+			// https://stackoverflow.com/questions/69805245/directx-12-application-is-crashing-in-windows-11
+			D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE
+		};
+		// 抑制するレベル
+		D3D12_MESSAGE_SEVERITY severities[] = { D3D12_MESSAGE_SEVERITY_INFO };
+		D3D12_INFO_QUEUE_FILTER filter{};
+		filter.DenyList.NumIDs = _countof(denyIDs);
+		filter.DenyList.pIDList = denyIDs;
+		filter.DenyList.NumSeverities = _countof(severities);
+		filter.DenyList.pSeverityList = severities;
+		// 指定したメッセージの表示を抑制する
+		infoQueue->PushStorageFilter(&filter);
+
+#pragma endregion
+
+
+		// 解放
+		infoQueue->Release();
+	}
+
+#endif // _DEBUG
+
+
+#pragma endregion
+
+
+
+	// DirectX12 の初期化の終わり
 #pragma endregion
 
 	// 一次初期化の終わり
@@ -295,6 +362,20 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// 初期化の終わり
 #pragma endregion
 
+#pragma region Fence と Event を生成する
+
+	// 初期値 0 で Fence を作る
+	ID3D12Fence* fence = nullptr;
+	uint64_t fenceValue = 0;
+	hr = device->CreateFence(fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+	assert(SUCCEEDED(hr));
+
+	// Fence の Signal を待つためのイベントを作成する
+	HANDLE fenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	assert(fenceEvent != nullptr);
+
+#pragma endregion
+
 
 	//// メインループ ////
 
@@ -315,15 +396,48 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 			// これから書き込むバックバッファのインデックスを取得
 			UINT backBufferIndex = swapChain->GetCurrentBackBufferIndex();
+
+#pragma region TrandsitionBarrier を張る
+
+			// TransitionBarrier の設定
+			D3D12_RESOURCE_BARRIER barrier{};
+			// 今回のバリアは Transition
+			barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+			// None にしておく
+			barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+			// バリアを張る対象のリソース。現在のバックバッファに対して行う
+			barrier.Transition.pResource = swapChainResources[backBufferIndex];
+			// 遷移前（現在）の ResourcesState
+			barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+			// 遷移後の ResourceState
+			barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+			// TransitionBarrier を張る
+			commandList->ResourceBarrier(1, &barrier);
+
+#pragma endregion
+
 			// 描画先の RTV を設定する
 			commandList->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, nullptr);
 			// 指定した色で画面全体をクリアする
 			float clearColor[] = { 0.1f,0.25f,0.5f,1.0f };	// 青っぽい色。RGBA の順
 			commandList->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
+			
+#pragma region Resourceの状態を RENDER_TARGET から PRESENT にする
+
+			// 画面に描く処理はすべて終わり、画面に移すので状態を遷移
+			// 今回は RenderTarget から Present にする
+			barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+			barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+			// TransitionBarrier を張る
+			commandList->ResourceBarrier(1, &barrier);
+
+#pragma endregion
+
 			// コマンドリストの内容を確定させる。すべてのコマンドを詰んでから Close すること
 			hr = commandList->Close();
 			assert(SUCCEEDED(hr));
 
+			// コマンドを積み込んで確定させるの終わり
 #pragma endregion
 
 #pragma region コマンドをキックする
@@ -333,6 +447,29 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			commandQueue->ExecuteCommandLists(1, commandLists);
 			// GPU と OS に画面の交換を行うように通知する
 			swapChain->Present(1, 0);
+
+#pragma region GPU に Signal(シグナル)を送る
+
+			// Fence の値を更新
+			fenceValue++;
+			// GPU がここまで辿り着いたときに、Fence の値を指定した値に代入するように Signal を送る
+			commandQueue->Signal(fence, fenceValue);
+
+#pragma endregion
+
+#pragma region Fence の値を確認して GPU を待つ
+
+			// Fence の値が指定した Signal 値に辿り着いているか確認する
+			// GetCompletedValue の初期値は Fence 作成時に渡した初期値
+			if (fence->GetCompletedValue() < fenceValue) {
+				// 指定した Signal に辿り着いていないので、辿り着くまで待つようにイベントを設定する
+				fence->SetEventOnCompletion(fenceValue, fenceEvent);
+				// イベントを待つ
+				WaitForSingleObject(fenceEvent, INFINITE);
+			}
+
+#pragma endregion
+
 			// 次のフレーム用のコマンドリストを準備
 			hr = commandAllocator->Reset();
 			assert(SUCCEEDED(hr));
@@ -341,7 +478,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 #pragma endregion
 
-			// 画面の色を変える終わり
+			// 画面の色を変えるの終わり
 #pragma endregion
 
 
