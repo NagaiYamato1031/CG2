@@ -511,7 +511,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 #pragma endregion
 
-#pragma region ReportLiveObjects (オブジェクトの解放チェック)
+#pragma region ReportLiveObjects オブジェクトの解放チェック
 
 	// リソースリークチェック
 	IDXGIDebug1* debug;
