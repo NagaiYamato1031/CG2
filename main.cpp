@@ -13,13 +13,26 @@
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"dxcompiler.lib")
 
-struct Vector4
-{
-	float x;
-	float y;
-	float z;
-	float w;
+#include "Mymath.h"
+#include "C:\KamataEngine\DirectXGame\math\Vector2.h"
+#include "C:\KamataEngine\DirectXGame\math\Vector3.h"
+#include "C:\KamataEngine\DirectXGame\math\Vector4.h"
+
+#include "C:\KamataEngine\DirectXGame\math\Matrix4x4.h"
+
+struct Transform {
+	Vector3 scale;
+	Vector3 rotate;
+	Vector3 translate;
 };
+
+//struct Vector4
+//{
+//	float x;
+//	float y;
+//	float z;
+//	float w;
+//};
 
 void Log(const std::string& message) {
 	OutputDebugStringA(message.c_str());
@@ -518,11 +531,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-	// RootParameter 作成。複数設定できるので配列。今回は結果 1 つだけなので長さ 1 の配列
-	D3D12_ROOT_PARAMETER rootParameters[1] = {};
+	// RootParameter 作成。PixelShader の Material と VertexShader の Tranform
+	D3D12_ROOT_PARAMETER rootParameters[2] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	// CBV を使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	// PixelShader で使う
 	rootParameters[0].Descriptor.ShaderRegister = 0;					// レジスタ番号 0 とバインド
+	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	// CBV を使う
+	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;// VertexShader で使う
+	rootParameters[1].Descriptor.ShaderRegister = 0;					// レジスタ番号 0 とバインド
+
 	descriptionRootSignature.pParameters = rootParameters;				// ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters);	// 配列の長さ
 
@@ -686,7 +703,21 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 #pragma endregion
 
+#pragma region TransformationMatrix 用の Resource を作る
 
+	// WVP 用のリソースを作る。Matrix4x4 1 つ分のサイズを用意する
+	ID3D12Resource* wvpResource = CreateBufferResource(device, sizeof(Matrix4x4));
+	// データを書き込む
+	Matrix4x4* wvpData = nullptr;
+	// 書き込むためのアドレスを取得
+	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	// 単位行列を書き込んでおく
+	*wvpData = Mymath::MakeIdentity4x4();
+
+#pragma endregion
+
+
+	// Resource にデータを書き込む の終わり
 #pragma endregion
 
 #pragma region Viewport と Scissor(シザー)
@@ -717,6 +748,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 #pragma region メインループ
 
+	// Transform 変数を作る
+	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	MSG msg{};
 	// ウィンドウの×ボタンが押されるまでループ
@@ -728,6 +761,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		}
 		else {
 			// ゲームの処理
+			transform.rotate.y += 0.03f;
+			Matrix4x4 worldMatrix = Mymath::MakeAffineMatrix4x4(transform.scale, transform.rotate, transform.translate);
+			*wvpData = worldMatrix;
 
 #pragma region 画面の色を変える
 
@@ -777,6 +813,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			// マテリアル CBuffer の場所を設定
 			commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+			// wvp 用の CBuffer の場所を設定
+			commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 			// 描画！(DrawCall / ドローコール)。3 頂点で 1 つのインスタンス。
 			commandList->DrawInstanced(3, 1, 0, 0);
 
