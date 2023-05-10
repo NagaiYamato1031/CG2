@@ -26,13 +26,6 @@ struct Transform {
 	Vector3 translate;
 };
 
-//struct Vector4
-//{
-//	float x;
-//	float y;
-//	float z;
-//	float w;
-//};
 
 void Log(const std::string& message) {
 	OutputDebugStringA(message.c_str());
@@ -762,7 +755,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		else {
 			// ゲームの処理
 			transform.rotate.y += 0.03f;
-			Matrix4x4 worldMatrix = Mymath::MakeAffineMatrix4x4(transform.scale, transform.rotate, transform.translate);
+			Matrix4x4 worldMatrix = Mymath::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 			*wvpData = worldMatrix;
 
 #pragma region 画面の色を変える
@@ -891,6 +884,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 #pragma region 解放処理
 
+	wvpResource->Release();
 	materialResource->Release();
 	vertexResource->Release();
 	graphicsPipelineState->Release();
