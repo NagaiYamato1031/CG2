@@ -169,6 +169,14 @@ float Mymath::Dot(const Vector3& v1, const Vector3& v2) {
 	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
+Vector3 Mymath::Cross(const Vector3& v1, const Vector3& v2) {
+	Vector3 result;
+	result.x = v1.y * v2.z - v2.y * v1.z;
+	result.y = v1.z * v2.x - v2.z * v1.x;
+	result.z = v1.x * v2.y - v2.x * v1.y;
+	return result;
+}
+
 // 長さ
 float Mymath::Length(const Vector3& v) { return sqrtf(Dot(v, v)); }
 
@@ -593,6 +601,48 @@ Matrix4x4
 
 	return Multiply(Multiply(scaleMatrix_, rotateMatrix_), translateMatrix_);
 }
+
+Matrix4x4 Mymath::MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
+	Matrix4x4 result{
+		1 / aspectRatio * (1 / std::tanf(fovY / 2)),0,0,0,
+		0,(1 / std::tanf(fovY / 2)),0,0,
+		0,0,farClip / (farClip - nearClip),1,
+		0,0,(-nearClip * farClip) / (farClip - nearClip),0
+	};
+	return result;
+}
+
+Matrix4x4 Mymath::MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip) {
+	Matrix4x4 result{
+		2 / (right - left),0,0,0,
+		0,2 / (top - bottom),0,0,
+		0,0,1 / (farClip - nearClip),0,
+		(left + right) / (left - right),(top + bottom) / (bottom - top),nearClip / (nearClip - farClip),1
+	};
+	return result;
+}
+
+Matrix4x4 Mymath::MakeOrthographicMatrix(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& nearFar) {
+	return MakeOrthographicMatrix(leftTop.x, leftTop.y, rightBottom.x, rightBottom.y, nearFar.x, nearFar.y);
+}
+
+Matrix4x4 Mymath::MakeViewportMatrix(float left, float top, float width, float height, float minD = 0, float maxD = 1) {
+	assert(minD <= maxD);
+	Matrix4x4 result{
+		width / 2.0f,0,0,0,
+		0,-height / 2.0f,0,0,
+		0,0,maxD - minD,0,
+		left + width / 2.0f,top + height / 2.0f, minD,1
+	};
+	return result;
+}
+Matrix4x4 Mymath::MakeViewportMatrix(const Vector2& leftTop, const Vector2& size, const Vector2& depth = { 0,1 }) {
+	return MakeViewportMatrix(leftTop.x, leftTop.y, size.x, size.y, depth.x, depth.y);
+}
+Matrix4x4 Mymath::MakeViewportMatrix(const Vector4& info, const Vector2& depth = { 0,1 }) {
+	return MakeViewportMatrix(info.x, info.y, info.z, info.w, depth.x, depth.y);
+}
+
 // End Matrix4x4
 #pragma endregion
 

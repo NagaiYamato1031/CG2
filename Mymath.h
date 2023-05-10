@@ -143,6 +143,14 @@ Vector3 Multiply(const Vector3& v, const Matrix3x3& matrix);
 float Dot(const Vector3& v1, const Vector3& v2);
 
 /// <summary>
+/// ベクトルのクロス積
+/// </summary>
+/// <param name="v1">ベクトル１</param>
+/// <param name="v2">ベクトル２</param>
+/// <returns>クロス積</returns>
+Vector3 Cross(const Vector3& v1, const Vector3& v2);
+
+/// <summary>
 /// ベクトルの長さ
 /// </summary>
 /// <param name="v">ベクトル</param>
@@ -340,6 +348,63 @@ Matrix4x4 MakeRotateXYZMatrix(const Vector3& radian);
 /// <param name="translate">移動</param>
 /// <returns>4x4 アフィン行列</returns>
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
+
+/// <summary>
+/// 透視変換行列
+/// </summary>
+/// <param name="fovY">画角</param>
+/// <param name="aspectRatio">アスペクト比</param>
+/// <param name="nearClip">近平面</param>
+/// <param name="farClip">遠平面</param>
+/// <returns></returns>
+Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip);
+
+/// <summary>
+/// 正射影行列
+/// </summary>
+/// <param name="left">左</param>
+/// <param name="top">上</param>
+/// <param name="right">右</param>
+/// <param name="bottom">下</param>
+/// <param name="nearClip">近平面</param>
+/// <param name="farClip">遠平面</param>
+/// <returns>正射影行列</returns>
+Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip);
+/// <summary>
+/// 正射影行列
+/// </summary>
+/// <param name="leftTop">左上</param>
+/// <param name="rightBottom">右下</param>
+/// <param name="nearFar">近遠</param>
+/// <returns>正射影行列</returns>
+Matrix4x4 MakeOrthographicMatrix(const Vector2& leftTop, const Vector2& rightBottom, const Vector2& nearFar);
+
+/// <summary>
+/// ビューポート行列
+/// </summary>
+/// <param name="left">左</param>
+/// <param name="top">上</param>
+/// <param name="width">横幅</param>
+/// <param name="height">縦幅</param>
+/// <param name="minD">最小深度値</param>
+/// <param name="maxD">最大深度値</param>
+/// <returns>ビューポート行列</returns>
+Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minD, float maxD);
+/// <summary>
+/// ビューポート行列
+/// </summary>
+/// <param name="leftTop">左上座標</param>
+/// <param name="size">サイズ</param>
+/// <param name="depth">深度バッファ</param>
+/// <returns>ビューポート行列</returns>
+Matrix4x4 MakeViewportMatrix(const Vector2& leftTop, const Vector2& size, const Vector2& depth);
+/// <summary>
+/// ビューポート行列
+/// </summary>
+/// <param name="info">左上座標、サイズの情報</param>
+/// <param name="depth">深度バッファ</param>
+/// <returns>ビューポート行列</returns>
+Matrix4x4 MakeViewportMatrix(const Vector4& info, const Vector2& depth);
 
 // End Matrix4x4
 #pragma endregion
