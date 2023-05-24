@@ -941,47 +941,48 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	ID3D12Resource* textureResource = CreateTextureResource(device, metadata);
 	//UploadTextureData(textureResource, mipImages);
 	ID3D12Resource* intermediateResource = UploadTextureData(textureResource, mipImages, device, commandList);
-//	
-//	// commandList を Close する
-//	hr = commandList->Close();
-//	assert(SUCCEEDED(hr));
-//
-//#pragma region コマンドをキックする
-//
-//	// GPU にコマンドリストの実行を行わせる
-//	ID3D12CommandList* commandLists[] = { commandList };
-//	commandQueue->ExecuteCommandLists(1, commandLists);
-//
-//#pragma region GPU に Signal(シグナル)を送る
-//
-//	// Fence の値を更新
-//	fenceValue++;
-//	// GPU がここまで辿り着いたときに、Fence の値を指定した値に代入するように Signal を送る
-//	commandQueue->Signal(fence, fenceValue);
-//
-//#pragma endregion
-//
-//#pragma region Fence の値を確認して GPU を待つ
-//
-//	// Fence の値が指定した Signal 値に辿り着いているか確認する
-//	// GetCompletedValue の初期値は Fence 作成時に渡した初期値
-//	if (fence->GetCompletedValue() < fenceValue) {
-//		// 指定した Signal に辿り着いていないので、辿り着くまで待つようにイベントを設定する
-//		fence->SetEventOnCompletion(fenceValue, fenceEvent);
-//		// イベントを待つ
-//		WaitForSingleObject(fenceEvent, INFINITE);
-//	}
-//
-//#pragma endregion
-//
-//	// 次のフレーム用のコマンドリストを準備
-//	hr = commandAllocator->Reset();
-//	assert(SUCCEEDED(hr));
-//	hr = commandList->Reset(commandAllocator, nullptr);
-//	assert(SUCCEEDED(hr));
-//
-//#pragma endregion
 
+	// commandList を Close する
+	hr = commandList->Close();
+	assert(SUCCEEDED(hr));
+
+#pragma region コマンドをキックする
+
+	// GPU にコマンドリストの実行を行わせる
+	ID3D12CommandList* intermediateCommandList[] = { commandList };
+	commandQueue->ExecuteCommandLists(1, intermediateCommandList);
+
+#pragma region GPU に Signal(シグナル)を送る
+
+	// Fence の値を更新
+	fenceValue++;
+	// GPU がここまで辿り着いたときに、Fence の値を指定した値に代入するように Signal を送る
+	commandQueue->Signal(fence, fenceValue);
+
+#pragma endregion
+
+#pragma region Fence の値を確認して GPU を待つ
+
+	// Fence の値が指定した Signal 値に辿り着いているか確認する
+	// GetCompletedValue の初期値は Fence 作成時に渡した初期値
+	if (fence->GetCompletedValue() < fenceValue) {
+		// 指定した Signal に辿り着いていないので、辿り着くまで待つようにイベントを設定する
+		fence->SetEventOnCompletion(fenceValue, fenceEvent);
+		// イベントを待つ
+		WaitForSingleObject(fenceEvent, INFINITE);
+	}
+
+#pragma endregion
+
+	// 次のフレーム用のコマンドリストを準備
+	hr = commandAllocator->Reset();
+	assert(SUCCEEDED(hr));
+	hr = commandList->Reset(commandAllocator, nullptr);
+	assert(SUCCEEDED(hr));
+
+#pragma endregion
+
+	intermediateResource->Release();
 
 	// Texture を読み込んで転送する の終わり
 #pragma endregion
@@ -1193,7 +1194,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 #pragma region 解放処理
 
-	intermediateResource->Release();
+	//intermediateResource->Release();
 	mipImages.Release();
 	textureResource->Release();
 	ImGui_ImplDX12_Shutdown();
