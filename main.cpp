@@ -19,6 +19,8 @@
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 #include "externals/DirectXTex/DirectXTex.h"
+#include "externals/DirectXTex/d3dx12.h"
+#include <vector>
 
 #include "Mymath.h"
 #include "C:\KamataEngine\DirectXGame\math\Vector2.h"
@@ -77,7 +79,7 @@ std::string ConvertString(const std::wstring& str) {
 // ウィンドウプロシージャ
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
-		return true;	
+		return true;
 	}
 
 	// メッセージに応じてゲーム固有の処理を行う
@@ -237,7 +239,7 @@ DirectX::ScratchImage LoadTexture(const std::string& filePath) {
 ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata) {
 
 #pragma region metadata を基に Resource の設定
-	
+
 	D3D12_RESOURCE_DESC resourceDesc{};
 	resourceDesc.Width = UINT(metadata.width);								// Texture の幅
 	resourceDesc.Height = UINT(metadata.height);							// Texture の高さ
@@ -252,9 +254,10 @@ ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMe
 #pragma region 利用する Heap の設定
 
 	D3D12_HEAP_PROPERTIES heapProperties{};
-	heapProperties.Type = D3D12_HEAP_TYPE_CUSTOM;							// 細かい設定を行う
-	heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;	// WriteBack ポリシーで CPU アクセス可能
-	heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;				// プロセッサの近くに配置
+	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
+	//heapProperties.Type = D3D12_HEAP_TYPE_CUSTOM;							// 細かい設定を行う
+	//heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;	// WriteBack ポリシーで CPU アクセス可能
+	//heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;				// プロセッサの近くに配置
 
 #pragma endregion
 
@@ -265,7 +268,7 @@ ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMe
 		&heapProperties,					// Heap の設定
 		D3D12_HEAP_FLAG_NONE,				// Heap の特殊な設定。特になし。
 		&resourceDesc,						// Resource の設定
-		D3D12_RESOURCE_STATE_GENERIC_READ,	// 初回の ResourceState。Texture は基本読むだけ
+		D3D12_RESOURCE_STATE_COPY_DEST,		// データ転送される設定
 		nullptr,							// Clear 最適値。使わないので nullptr
 		IID_PPV_ARGS(&resource)				// 作成する Resource ポインタへのポインタ
 	);
@@ -295,6 +298,26 @@ void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mip
 	}
 }
 
+[[nodiscard]]
+ID3D12Resource* UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages, ID3D12Device* device, ID3D12GraphicsCommandList* commandList) {
+	std::vector<D3D12_SUBRESOURCE_DATA> subresources;
+	DirectX::PrepareUpload(device, mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresources);
+	uint64_t intermediateSize = GetRequiredIntermediateSize(texture, 0, UINT(subresources.size()));
+	ID3D12Resource* intermediateResource = CreateBufferResource(device, intermediateSize);
+	UpdateSubresources(commandList, texture, intermediateResource, 0, 0, UINT(subresources.size()), subresources.data());
+	// Texture への転送後は利用できるよう、D3D12_RESOURCE_STATE_COPY_DEST から D3D12_RESOURCE_STATE_GENERIC_READ へ ResourceState を変更する
+	D3D12_RESOURCE_BARRIER barrier{};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = texture;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
+	commandList->ResourceBarrier(1, &barrier);
+	return intermediateResource;
+}
+
+
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
@@ -302,6 +325,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 #pragma region 一次初期化
 
+#pragma region COM の初期化
+
+	CoInitializeEx(0, COINIT_MULTITHREADED);
+
+#pragma endregion
 
 #pragma region ウィンドウプロシージャの設定
 
@@ -911,8 +939,51 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	DirectX::ScratchImage mipImages = LoadTexture("resources/uvChecker.png");
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 	ID3D12Resource* textureResource = CreateTextureResource(device, metadata);
-	UploadTextureData(textureResource, mipImages);
+	//UploadTextureData(textureResource, mipImages);
+	ID3D12Resource* intermediateResource = UploadTextureData(textureResource, mipImages, device, commandList);
+//	
+//	// commandList を Close する
+//	hr = commandList->Close();
+//	assert(SUCCEEDED(hr));
+//
+//#pragma region コマンドをキックする
+//
+//	// GPU にコマンドリストの実行を行わせる
+//	ID3D12CommandList* commandLists[] = { commandList };
+//	commandQueue->ExecuteCommandLists(1, commandLists);
+//
+//#pragma region GPU に Signal(シグナル)を送る
+//
+//	// Fence の値を更新
+//	fenceValue++;
+//	// GPU がここまで辿り着いたときに、Fence の値を指定した値に代入するように Signal を送る
+//	commandQueue->Signal(fence, fenceValue);
+//
+//#pragma endregion
+//
+//#pragma region Fence の値を確認して GPU を待つ
+//
+//	// Fence の値が指定した Signal 値に辿り着いているか確認する
+//	// GetCompletedValue の初期値は Fence 作成時に渡した初期値
+//	if (fence->GetCompletedValue() < fenceValue) {
+//		// 指定した Signal に辿り着いていないので、辿り着くまで待つようにイベントを設定する
+//		fence->SetEventOnCompletion(fenceValue, fenceEvent);
+//		// イベントを待つ
+//		WaitForSingleObject(fenceEvent, INFINITE);
+//	}
+//
+//#pragma endregion
+//
+//	// 次のフレーム用のコマンドリストを準備
+//	hr = commandAllocator->Reset();
+//	assert(SUCCEEDED(hr));
+//	hr = commandList->Reset(commandAllocator, nullptr);
+//	assert(SUCCEEDED(hr));
+//
+//#pragma endregion
 
+
+	// Texture を読み込んで転送する の終わり
 #pragma endregion
 
 #pragma region ShaderResourceView を作る
@@ -1042,7 +1113,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 			// 描画！(DrawCall / ドローコール)。3 頂点で 1 つのインスタンス。
 			commandList->DrawInstanced(3, 1, 0, 0);
-			
+
 
 #pragma endregion
 
@@ -1122,6 +1193,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 #pragma region 解放処理
 
+	intermediateResource->Release();
 	mipImages.Release();
 	textureResource->Release();
 	ImGui_ImplDX12_Shutdown();
@@ -1156,6 +1228,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	debugController->Release();
 #endif // _DEBUG
 	CloseWindow(hwnd);
+	CoUninitialize();
+
 
 #pragma endregion
 
