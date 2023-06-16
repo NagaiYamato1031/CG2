@@ -8,6 +8,8 @@
 #include <dxgidebug.h>
 #include <dxcapi.h>
 
+#include <numbers>
+
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
 #pragma comment(lib,"dxguid.lib")
@@ -22,6 +24,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg
 #include "externals/DirectXTex/d3dx12.h"
 #include <vector>
 
+#include "MyConst.h"
 #include "Mymath.h"
 #include "C:\KamataEngine\DirectXGame\math\Vector2.h"
 #include "C:\KamataEngine\DirectXGame\math\Vector3.h"
@@ -352,6 +355,72 @@ ID3D12Resource* UploadTextureData(ID3D12Resource* texture, const DirectX::Scratc
 	return intermediateResource;
 }
 
+// 球の表示
+void CreateSphere(VertexData* const vertexData, const uint32_t& kSubdivision) {
+	const float& pi = static_cast<float>(std::numbers::pi);
+	// 分割数
+	//const uint32_t kSubdivision = 16;
+	// 経度分割 1 つ分の角度
+	const float kLonEvery = 2 * pi / float(kSubdivision);
+	// 緯度分割 1 つ分の角度
+	const float kLatEvery = pi / float(kSubdivision);
+
+	// 頂点の数
+	//uint32_t vertexSize = kSubdivision * kSubdivision * 6;
+	// 頂点データ
+	//VertexData vertexData[6];
+
+	const float dTheta = pi / kSubdivision;
+	const float dPhi = 2 * pi / kSubdivision;
+	// 緯度の方向に分割 -π / 2 ～ π / 2
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; latIndex++) {
+		// 現在の緯度
+		float lat = -pi / 2.0f + kLatEvery * latIndex;
+		// 経度の方向に分割 0 ～ 2 π
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; lonIndex++) {
+			// 現在の経度
+			float lon = lonIndex * kLonEvery;
+			// world 座標系での a, b, c を求める
+			Vector4 pA, pB, pC, pD;
+			// texcoord
+			Vector2 tA, tB, tC, tD;
+			tA.x = float(lonIndex) / float(kSubdivision);
+			tA.y = 1.0f - float(latIndex) / float(kSubdivision);
+			tB.x = float(lonIndex) / float(kSubdivision);
+			tB.y = 1.0f - float(latIndex + 1) / float(kSubdivision);
+			tC.x = float(lonIndex + 1) / float(kSubdivision);
+			tC.y = 1.0f - float(latIndex) / float(kSubdivision);
+			tD.x = float(lonIndex + 1) / float(kSubdivision);
+			tD.y = 1.0f - float(latIndex + 1) / float(kSubdivision);
+			// a, b, c を Screen 座標系まで変換
+			pA = { cosf(lat) * cosf(lon),sinf(lat),cosf(lat) * sinf(lon),1.0f };
+			pB = { cosf(lat + dTheta) * cosf(lon),sinf(lat + dTheta),cosf(lat + dTheta) * sinf(lon) ,1.0f };
+			pC = { cosf(lat) * cosf(lon + dPhi),sinf(lat),cosf(lat) * sinf(lon + dPhi) ,1.0f };
+			pD = { cosf(lat + dTheta) * cosf(lon + dPhi),sinf(lat + dTheta),cosf(lat + dTheta) * sinf(lon + dPhi) ,1.0f };
+
+			uint32_t startIndex = (latIndex * kSubdivision + lonIndex) * 6;
+
+			vertexData[startIndex].position = pA;
+			vertexData[startIndex].texcoord = tA;
+
+			vertexData[startIndex + 1].position = pB;
+			vertexData[startIndex + 1].texcoord = tB;
+
+			vertexData[startIndex + 2].position = pC;
+			vertexData[startIndex + 2].texcoord = tC;
+
+			vertexData[startIndex + 3].position = pC;
+			vertexData[startIndex + 3].texcoord = tC;
+
+			vertexData[startIndex + 4].position = pB;
+			vertexData[startIndex + 4].texcoord = tB;
+
+			vertexData[startIndex + 5].position = pD;
+			vertexData[startIndex + 5].texcoord = tD;
+
+		}
+	}
+}
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
@@ -895,10 +964,14 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	ID3D12Resource* depthStencilResource = CreateDepthStencilTextureResource(device, kClientWidth, kClientHeight);
 	depthStencilResource;
 
-	ID3D12Resource* vertexResource = CreateBufferResource(device, sizeof(VertexData) * 6);
+	const uint32_t kSubdivision = 16;
+
+	const uint32_t kMaxVertexData = kSubdivision * kSubdivision * 6;
+
+	ID3D12Resource* vertexResource = CreateBufferResource(device, sizeof(VertexData) * kMaxVertexData);
 
 	// Sprite 用の頂点リソースを作る
-	ID3D12Resource* vertexResourceSprite = CreateBufferResource(device, sizeof(VertexData) * 6);
+	//ID3D12Resource* vertexResourceSprite = CreateBufferResource(device, sizeof(VertexData) * 6);
 
 
 #pragma endregion
@@ -910,18 +983,18 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// リソースの先頭アドレスから使う
 	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
 	// 使用するリソースのサイズは頂点 3 つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * 6;
+	vertexBufferView.SizeInBytes = sizeof(VertexData) * kMaxVertexData;
 	// 1 頂点当たりのサイズ
 	vertexBufferView.StrideInBytes = sizeof(VertexData);
 
-	// Sprite 用の頂点バッファビューを作成する
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
-	// リソースの先頭のアドレスから使う
-	vertexBufferViewSprite.BufferLocation = vertexResourceSprite->GetGPUVirtualAddress();
-	// 使用するリソースのサイズは頂点 6 つ分のサイズ
-	vertexBufferViewSprite.SizeInBytes = sizeof(VertexData) * 6;
-	// 1 頂点当たりのサイズ
-	vertexBufferViewSprite.StrideInBytes = sizeof(VertexData);
+	//// Sprite 用の頂点バッファビューを作成する
+	//D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
+	//// リソースの先頭のアドレスから使う
+	//vertexBufferViewSprite.BufferLocation = vertexResourceSprite->GetGPUVirtualAddress();
+	//// 使用するリソースのサイズは頂点 6 つ分のサイズ
+	//vertexBufferViewSprite.SizeInBytes = sizeof(VertexData) * 6;
+	//// 1 頂点当たりのサイズ
+	//vertexBufferViewSprite.StrideInBytes = sizeof(VertexData);
 
 
 #pragma endregion
@@ -932,49 +1005,51 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	VertexData* vertexData = nullptr;
 	// 書き込むためのアドレスを取得
 	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-	// 左下
-	vertexData[0].position = { -0.5f,-0.5f,0.0f,1.0f };
-	vertexData[0].texcoord = { 0.0f,1.0f };
-	// 上
-	vertexData[1].position = { 0.0f,0.5f,0.0f,1.0f };
-	vertexData[1].texcoord = { 0.5f,0.0f };
-	// 右下
-	vertexData[2].position = { 0.5f,-0.5f,0.0f,1.0f };
-	vertexData[2].texcoord = { 1.0f,1.0f };
+	// ここで処理ができる
+	CreateSphere(vertexData, kSubdivision);
+	//// 左下
+	//vertexData[0].position = { -0.5f,-0.5f,0.0f,1.0f };
+	//vertexData[0].texcoord = { 0.0f,1.0f };
+	//// 上
+	//vertexData[1].position = { 0.0f,0.5f,0.0f,1.0f };
+	//vertexData[1].texcoord = { 0.5f,0.0f };
+	//// 右下
+	//vertexData[2].position = { 0.5f,-0.5f,0.0f,1.0f };
+	//vertexData[2].texcoord = { 1.0f,1.0f };
 
-	// 左下2
-	vertexData[3].position = { -0.5f,-0.5f,0.5f,1.0f };
-	vertexData[3].texcoord = { 0.0f,1.0f };
-	// 上2
-	vertexData[4].position = { 0.0f,0.0f,0.0f,1.0f };
-	vertexData[4].texcoord = { 0.5f,0.0f };
-	// 右下2
-	vertexData[5].position = { 0.5f,-0.5f,-0.5f,1.0f };
-	vertexData[5].texcoord = { 1.0f,1.0f };
+	//// 左下2
+	//vertexData[3].position = { -0.5f,-0.5f,0.5f,1.0f };
+	//vertexData[3].texcoord = { 0.0f,1.0f };
+	//// 上2
+	//vertexData[4].position = { 0.0f,0.0f,0.0f,1.0f };
+	//vertexData[4].texcoord = { 0.5f,0.0f };
+	//// 右下2
+	//vertexData[5].position = { 0.5f,-0.5f,-0.5f,1.0f };
+	//vertexData[5].texcoord = { 1.0f,1.0f };
 
-	// Sprite 用の頂点データを設定する
-	VertexData* vertexDataSprite = nullptr;
-	vertexResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSprite));
-	// 1 枚目の三角形
-	// 左下
-	vertexDataSprite[0].position = { 0.0f,360.0f,0.0f,1.0f };
-	vertexDataSprite[0].texcoord = { 0.0f,1.0f };
-	// 左下
-	vertexDataSprite[1].position = { 0.0f,0.0f,0.0f,1.0f };
-	vertexDataSprite[1].texcoord = { 0.0f,0.0f };
-	// 左下
-	vertexDataSprite[2].position = { 640.0f,360.0f,0.0f,1.0f };
-	vertexDataSprite[2].texcoord = { 1.0f,1.0f };
-	// 2 枚目の三角形
-	// 左下
-	vertexDataSprite[3].position = { 0.0f,0.0f,0.0f,1.0f };
-	vertexDataSprite[3].texcoord = { 0.0f,0.0f };
-	// 左下
-	vertexDataSprite[4].position = { 640.0f,0.0f,0.0f,1.0f };
-	vertexDataSprite[4].texcoord = { 1.0f,0.0f };
-	// 左下
-	vertexDataSprite[5].position = { 640.0f,360.0f,0.0f,1.0f };
-	vertexDataSprite[5].texcoord = { 1.0f,1.0f };
+	//// Sprite 用の頂点データを設定する
+	//VertexData* vertexDataSprite = nullptr;
+	//vertexResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSprite));
+	//// 1 枚目の三角形
+	//// 左下
+	//vertexDataSprite[0].position = { 0.0f,360.0f,0.0f,1.0f };
+	//vertexDataSprite[0].texcoord = { 0.0f,1.0f };
+	//// 左下
+	//vertexDataSprite[1].position = { 0.0f,0.0f,0.0f,1.0f };
+	//vertexDataSprite[1].texcoord = { 0.0f,0.0f };
+	//// 左下
+	//vertexDataSprite[2].position = { 640.0f,360.0f,0.0f,1.0f };
+	//vertexDataSprite[2].texcoord = { 1.0f,1.0f };
+	//// 2 枚目の三角形
+	//// 左下
+	//vertexDataSprite[3].position = { 0.0f,0.0f,0.0f,1.0f };
+	//vertexDataSprite[3].texcoord = { 0.0f,0.0f };
+	//// 左下
+	//vertexDataSprite[4].position = { 640.0f,0.0f,0.0f,1.0f };
+	//vertexDataSprite[4].texcoord = { 1.0f,0.0f };
+	//// 左下
+	//vertexDataSprite[5].position = { 640.0f,360.0f,0.0f,1.0f };
+	//vertexDataSprite[5].texcoord = { 1.0f,1.0f };
 
 
 #pragma region Material 用の Resource を作る
@@ -1183,6 +1258,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			//ImGui::ShowDemoWindow();
 			ImGui::Begin("Settings");
 
+			if (ImGui::TreeNode("Camera")) {
+				ImGui::DragFloat3("CameraTranslate", &cameraTransform.translate.x, 0.01f);
+				ImGui::DragFloat3("CameraRotate", &cameraTransform.rotate.x, 0.01f);
+
+				ImGui::TreePop();
+			}
 			ImGui::End();
 
 #pragma endregion
@@ -1283,15 +1364,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			commandList->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 
 			// 描画！(DrawCall / ドローコール)。3 頂点で 1 つのインスタンス。
-			commandList->DrawInstanced(6, 1, 0, 0);
+			commandList->DrawInstanced(kMaxVertexData, 1, 0, 0);
 
 			// Sprite 用の描画コマンド
 			// 変更が必要なものだけ変更する
-			commandList->IASetVertexBuffers(0, 1, &vertexBufferViewSprite);	// VBV を設定
-			// TransformationMatrixCBuffer の場所を設定
-			commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
-			// 描画！(DrawCall / ドローコール)
-			commandList->DrawInstanced(6, 1, 0, 0);
+			//commandList->IASetVertexBuffers(0, 1, &vertexBufferViewSprite);	// VBV を設定
+			//// TransformationMatrixCBuffer の場所を設定
+			//commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
+			//// 描画！(DrawCall / ドローコール)
+			//commandList->DrawInstanced(6, 1, 0, 0);
 
 #pragma endregion
 
@@ -1380,7 +1461,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	transformationMatrixResourceSprite->Release();
 	wvpResource->Release();
 	materialResource->Release();
-	vertexResourceSprite->Release();
+	//vertexResourceSprite->Release();
 	vertexResource->Release();
 	depthStencilResource->Release();
 	graphicsPipelineState->Release();
