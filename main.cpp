@@ -30,8 +30,6 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg
 #include "C:\KamataEngine\DirectXGame\math\Vector3.h"
 #include "C:\KamataEngine\DirectXGame\math\Vector4.h"
 
-#include "C:\KamataEngine\DirectXGame\math\Matrix4x4.h"
-
 struct Transform {
 	Vector3 scale;
 	Vector3 rotate;
