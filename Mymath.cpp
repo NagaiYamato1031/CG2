@@ -3,6 +3,210 @@
 #include <cmath>
 #include "MyConst.h"
 
+#pragma region Objects
+
+
+#pragma region Sphere
+
+bool Mymath::IsCollision(const Sphere& s1, const Sphere& s2) {
+	// 2 つの球の中心点間の距離を求める
+	float distance = Length(s1.center - s2.center);
+	// 半径の合計よりも短ければ衝突
+	if (distance <= s1.radius + s2.radius) {
+		return true;
+	}
+	return false;
+}
+
+bool Mymath::IsCollision(const Sphere& sphere, const Plane& plane) {
+	// 球の中心と平面の距離を求める
+	float distance = sqrtf(powf(Dot(sphere.center, plane.normal) - plane.distance, 2));
+	// 半径よりも短ければ衝突
+	if (distance <= sphere.radius) {
+		return true;
+	}
+	return false;
+}
+
+#pragma endregion
+
+#pragma region Plane
+
+bool Mymath::IsCollision(const Plane& plane, const Line& line) {
+	// 垂直判定を行うために、法線と線の内積を求める
+	float dot = Dot(plane.normal, line.diff);
+	// 垂直 = 平行であるので、衝突しない
+	if (dot == 0.0f) {
+		return false;
+	}
+	return true;
+}
+
+bool Mymath::IsCollision(const Plane& plane, const Ray& ray) {
+	// 垂直判定を行うために、法線と線の内積を求める
+	float dot = Dot(plane.normal, ray.diff);
+	// 垂直 = 平行であるので、衝突しない
+	if (dot == 0.0f) {
+		return false;
+	}
+	// t を求める
+	float t = (plane.distance - Dot(ray.origin, plane.normal)) / dot;
+	if (t < 0.0f) {
+		return false;
+	}
+	return true;
+}
+
+bool Mymath::IsCollision(const Plane& plane, const Segment& segment) {
+	// 垂直判定を行うために、法線と線の内積を求める
+	float dot = Dot(plane.normal, segment.diff);
+	// 垂直 = 平行であるので、衝突しない
+	if (dot == 0.0f) {
+		return false;
+	}
+	// t を求める
+	float t = (plane.distance - Dot(segment.origin, plane.normal)) / dot;
+	if (t < 0.0f || 1.0f < t) {
+		return false;
+	}
+	return true;
+}
+
+#pragma endregion
+
+#pragma region Triangle
+
+bool Mymath::IsCollision(const Triangle& triangle, const Line& line) {
+	Vector3 v01 = triangle.vertices[1] - triangle.vertices[0];
+	Vector3 v12 = triangle.vertices[2] - triangle.vertices[1];
+	Vector3 v20 = triangle.vertices[0] - triangle.vertices[2];
+
+	Vector3 normal = Normalize(Cross(v01, v12));
+	Plane plane;
+	plane.normal = normal;
+	plane.distance = Dot(triangle.vertices[0], normal);
+
+	// 垂直判定を行うために、法線と線の内積を求める
+	float dot = Dot(plane.normal, line.diff);
+	// 垂直 = 平行であるので、衝突しない
+	if (dot == 0.0f) {
+		return false;
+	}
+	// t を求める
+	float t = (plane.distance - Dot(line.origin, plane.normal)) / dot;
+
+	// 衝突点 p
+	Vector3 p = line.origin + line.diff * t;
+
+	Vector3 v1p = p - triangle.vertices[1];
+	Vector3 v2p = p - triangle.vertices[2];
+	Vector3 v0p = p - triangle.vertices[0];
+
+	// 各辺を結んだベクトルと、頂点と衝突点 p を結んだベクトルのクロス積を取る
+	Vector3 cross01 = Cross(v01, v1p);
+	Vector3 cross12 = Cross(v12, v2p);
+	Vector3 cross20 = Cross(v20, v0p);
+
+	if (0.0f <= Dot(cross01, normal) &&
+		0.0f <= Dot(cross12, normal) &&
+		0.0f <= Dot(cross20, normal)) {
+		return true;
+	}
+	return false;
+}
+bool Mymath::IsCollision(const Triangle& triangle, const Ray& ray) {
+	Vector3 v01 = triangle.vertices[1] - triangle.vertices[0];
+	Vector3 v12 = triangle.vertices[2] - triangle.vertices[1];
+	Vector3 v20 = triangle.vertices[0] - triangle.vertices[2];
+
+	Vector3 normal = Normalize(Cross(v01, v12));
+	Plane plane;
+	plane.normal = normal;
+	plane.distance = Dot(triangle.vertices[0], normal);
+
+	// 垂直判定を行うために、法線と線の内積を求める
+	float dot = Dot(plane.normal, ray.diff);
+	// 垂直 = 平行であるので、衝突しない
+	if (dot == 0.0f) {
+		return false;
+	}
+	// t を求める
+	float t = (plane.distance - Dot(ray.origin, plane.normal)) / dot;
+	if (t < 0.0f) {
+		return false;
+	}
+	// 平面に当たっている場合
+
+	// 衝突点 p
+	Vector3 p = ray.origin + ray.diff * t;
+
+	Vector3 v1p = p - triangle.vertices[1];
+	Vector3 v2p = p - triangle.vertices[2];
+	Vector3 v0p = p - triangle.vertices[0];
+
+	// 各辺を結んだベクトルと、頂点と衝突点 p を結んだベクトルのクロス積を取る
+	Vector3 cross01 = Cross(v01, v1p);
+	Vector3 cross12 = Cross(v12, v2p);
+	Vector3 cross20 = Cross(v20, v0p);
+
+	if (0.0f <= Dot(cross01, normal) &&
+		0.0f <= Dot(cross12, normal) &&
+		0.0f <= Dot(cross20, normal)) {
+		return true;
+	}
+	return false;
+}
+bool Mymath::IsCollision(const Triangle& triangle, const Segment& segment) {
+	Vector3 v01 = triangle.vertices[1] - triangle.vertices[0];
+	Vector3 v12 = triangle.vertices[2] - triangle.vertices[1];
+	Vector3 v20 = triangle.vertices[0] - triangle.vertices[2];
+
+	Vector3 normal = Normalize(Cross(v01, v12));
+	Plane plane;
+	plane.normal = normal;
+	plane.distance = Dot(triangle.vertices[0], normal);
+
+	// 垂直判定を行うために、法線と線の内積を求める
+	float dot = Dot(plane.normal, segment.diff);
+	// 垂直 = 平行であるので、衝突しない
+	if (dot == 0.0f) {
+		return false;
+	}
+	// t を求める
+	float t = (plane.distance - Dot(segment.origin, plane.normal)) / dot;
+	if (t < 0.0f || 1.0f < t) {
+		return false;
+	}
+	// 平面に当たっている場合
+
+	// 衝突点 p
+	Vector3 p = segment.origin + segment.diff * t;
+
+	Vector3 v1p = p - triangle.vertices[1];
+	Vector3 v2p = p - triangle.vertices[2];
+	Vector3 v0p = p - triangle.vertices[0];
+
+	// 各辺を結んだベクトルと、頂点と衝突点 p を結んだベクトルのクロス積を取る
+	Vector3 cross01 = Cross(v01, v1p);
+	Vector3 cross12 = Cross(v12, v2p);
+	Vector3 cross20 = Cross(v20, v0p);
+
+	if (0.0f <= Dot(cross01, normal) &&
+		0.0f <= Dot(cross12, normal) &&
+		0.0f <= Dot(cross20, normal)) {
+		return true;
+	}
+	return false;
+}
+
+#pragma endregion
+
+
+
+
+// End Objects
+#pragma endregion
+
 #pragma region Vector
 
 #pragma region Vector2
@@ -323,70 +527,6 @@ Vector4 Mymath::Normalize(const Vector4& v) {
 // End Vector
 #pragma endregion
 
-#pragma region Sphere
-
-bool Mymath::IsCollision(const Sphere& s1, const Sphere& s2) {
-	// 2 つの球の中心点間の距離を求める
-	float distance = Length(s1.center - s2.center);
-	// 半径の合計よりも短ければ衝突
-	if (distance <= s1.radius + s2.radius) {
-		return true;
-	}
-	return false;
-}
-
-bool Mymath::IsCollision(const Sphere& sphere, const Plane& plane) {
-	// 球の中心と平面の距離を求める
-	float distance = sqrtf(powf(Dot(sphere.center, plane.normal) - plane.distance, 2));
-	// 半径よりも短ければ衝突
-	if (distance <= sphere.radius) {
-		return true;
-	}
-	return false;
-}
-
-bool Mymath::IsCollision(const Plane& plane, const Line& line) {
-	// 垂直判定を行うために、法線と線の内積を求める
-	float dot = Dot(plane.normal, line.diff);
-	// 垂直 = 平行であるので、衝突しない
-	if (dot == 0.0f) {
-		return false;
-	}
-	return true;
-}
-
-bool Mymath::IsCollision(const Plane& plane, const Ray& ray) {
-	// 垂直判定を行うために、法線と線の内積を求める
-	float dot = Dot(plane.normal, ray.diff);
-	// 垂直 = 平行であるので、衝突しない
-	if (dot == 0.0f) {
-		return false;
-	}
-	// t を求める
-	float t = (plane.distance - Dot(ray.origin, plane.normal)) / dot;
-	if (t < 0.0f) {
-		return false;
-	}
-	return true;
-}
-
-bool Mymath::IsCollision(const Plane& plane, const Segment& segment) {
-	// 垂直判定を行うために、法線と線の内積を求める
-	float dot = Dot(plane.normal, segment.diff);
-	// 垂直 = 平行であるので、衝突しない
-	if (dot == 0.0f) {
-		return false;
-	}
-	// t を求める
-	float t = (plane.distance - Dot(segment.origin, plane.normal)) / dot;
-	if (t < 0.0f || 1.0f < t) {
-		return false;
-	}
-	return true;
-}
-
-
-#pragma endregion
 
 
 #pragma region Matrix

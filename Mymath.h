@@ -1,19 +1,6 @@
 #pragma once
 
-#include "C:\KamataEngine\DirectXGame\math\Vector2.h"
-#include "C:\KamataEngine\DirectXGame\math\Vector3.h"
-#include "C:\KamataEngine\DirectXGame\math\Vector4.h"
-#include "C:\KamataEngine\DirectXGame\math\Matrix4x4.h"
-
-struct Matrix3x3 {
-	float m[3][3];
-};
-
-struct Sphere;
-struct Line;
-struct Ray;
-struct Segment;
-struct Plane;
+#include "MyConst.h"
 
 #pragma region Oprator OverLoad
 
@@ -44,6 +31,67 @@ inline extern Vector4& operator*=(Vector4& v, float scalar);
 #pragma endregion
 
 namespace Mymath {
+
+#pragma region 3DCollision
+
+	/// <summary>
+	/// 球と球の衝突判定
+	/// </summary>
+	/// <param name="s1">球 1</param>
+	/// <param name="s2">球 2</param>
+	/// <returns>true:衝突している,false:衝突していない</returns>
+	bool IsCollision(const Sphere& s1, const Sphere& s2);
+	/// <summary>
+	/// 球と平面の衝突判定
+	/// </summary>
+	/// <param name="sphere">球</param>
+	/// <param name="plane">平面</param>
+	/// <returns>true:衝突している,false:衝突していない</returns>
+	bool IsCollision(const Sphere& sphere, const Plane& plane);
+	/// <summary>
+	/// 線と平面の衝突判定
+	/// </summary>
+	/// <param name="plane">平面</param>
+	/// <param name="line">直線</param>
+	/// <returns></returns>
+	bool IsCollision(const Plane& plane, const Line& line);
+	/// <summary>
+	/// 線と平面の衝突判定
+	/// </summary>
+	/// <param name="plane">平面</param>
+	/// <param name="line">半直線</param>
+	/// <returns></returns>
+	bool IsCollision(const Plane& plane, const Ray& ray);
+	/// <summary>
+	/// 線と平面の衝突判定
+	/// </summary>
+	/// <param name="plane">平面</param>
+	/// <param name="line">線分</param>
+	/// <returns></returns>
+	bool IsCollision(const Plane& plane, const Segment& segment);
+	/// <summary>
+	/// 三角形と直線の衝突判定
+	/// </summary>
+	/// <param name="triangle">三角形</param>
+	/// <param name="line">直線</param>
+	/// <returns></returns>
+	bool IsCollision(const Triangle& triangle, const Line& line);
+	/// <summary>
+	/// 三角形と半直線の衝突判定
+	/// </summary>
+	/// <param name="triangle">三角形</param>
+	/// <param name="ray">半直線</param>
+	/// <returns></returns>
+	bool IsCollision(const Triangle& triangle, const Ray& ray);
+	/// <summary>
+	/// 三角形と線分の衝突判定
+	/// </summary>
+	/// <param name="triangle">三角形</param>
+	/// <param name="segment">線分</param>
+	/// <returns></returns>
+	bool IsCollision(const Triangle& triangle, const Segment& segment);
+
+#pragma endregion
 
 #pragma region Vector
 
@@ -272,46 +320,6 @@ namespace Mymath {
 #pragma endregion
 
 // End Vector
-#pragma endregion
-
-#pragma region Sphere
-
-	/// <summary>
-	/// 球と球の衝突判定
-	/// </summary>
-	/// <param name="s1">球 1</param>
-	/// <param name="s2">球 2</param>
-	/// <returns>true:衝突している,false:衝突していない</returns>
-	bool IsCollision(const Sphere& s1, const Sphere& s2);
-	/// <summary>
-	/// 球と平面の衝突判定
-	/// </summary>
-	/// <param name="sphere">球</param>
-	/// <param name="plane">平面</param>
-	/// <returns>true:衝突している,false:衝突していない</returns>
-	bool IsCollision(const Sphere& sphere, const Plane& plane);
-	/// <summary>
-	/// 線と平面の衝突判定
-	/// </summary>
-	/// <param name="plane">平面</param>
-	/// <param name="line">直線</param>
-	/// <returns></returns>
-	bool IsCollision(const Plane& plane, const Line& line);
-	/// <summary>
-	/// 線と平面の衝突判定
-	/// </summary>
-	/// <param name="plane">平面</param>
-	/// <param name="line">半直線</param>
-	/// <returns></returns>
-	bool IsCollision(const Plane& plane, const Ray& ray);
-	/// <summary>
-	/// 線と平面の衝突判定
-	/// </summary>
-	/// <param name="plane">平面</param>
-	/// <param name="line">線分</param>
-	/// <returns></returns>
-	bool IsCollision(const Plane& plane, const Segment& segment);
-
 #pragma endregion
 
 #pragma region Matrix
