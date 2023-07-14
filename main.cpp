@@ -24,10 +24,10 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg
 #include "externals/DirectXTex/d3dx12.h"
 #include <vector>
 
-#include "MyConst.h"
-#include "Mymath.h"
+#include "base/MyConst.h"
+#include "base/Mymath.h"
 
-#include "MyEngine.h"
+#include "base/MyEngine.h"
 
 void Log(const std::string& message) {
 	OutputDebugStringA(message.c_str());
@@ -441,11 +441,17 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	MyEngine::Initialize("CG2", 1280, 720);
 
-	while (MyEngine::ProcessMessage() == 0)
+	while (MyEngine::ProcessMessage())
 	{
 		MyEngine::BeginFrame();
 
-
+		MyEngine::DrawTriangle(
+			{ -0.5f,-0.5f,0.0f },
+			{ 0.0f,0.5f,0.0f },
+			{ 0.5f,-0.5f,0.0f },
+			0x777777FF
+		);
+		
 		MyEngine::EndFrame();
 	}
 

@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="ソース ファイル">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="ヘッダー ファイル">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="リソース ファイル">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -16,23 +8,31 @@
     <Filter Include="imgui">
       <UniqueIdentifier>{c89f66e4-902a-4520-9170-47f01f52aabf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="math">
+    <Filter Include="MyEngines">
+      <UniqueIdentifier>{2c93d9d7-dde6-4ab6-a293-938f762b2bc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MyEngines\ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="MyEngines\ソース ファイル\base">
+      <UniqueIdentifier>{ebc4d6c8-1079-4918-bb13-2a4777fea6ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MyEngines\ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="MyEngines\ヘッダー ファイル\base">
+      <UniqueIdentifier>{ba276684-9046-4730-9e17-d0dd274ef54b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MyEngines\ヘッダー ファイル\math">
       <UniqueIdentifier>{5b72412f-9b6e-4b9c-9033-4a034d5ff405}</UniqueIdentifier>
     </Filter>
-    <Filter Include="base">
-      <UniqueIdentifier>{9b7df87e-8796-4c18-8688-2b2a475889dc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="hlsl">
-      <UniqueIdentifier>{31ca921d-2050-48df-b95d-384df788282c}</UniqueIdentifier>
+    <Filter Include="リソース ファイル\shaders">
+      <UniqueIdentifier>{ece7677c-d324-478e-a633-f2679e6ee3e4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Mymath.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="externals\imgui\imgui.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
@@ -54,28 +54,27 @@
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="WinApp.cpp">
-      <Filter>base</Filter>
+    <ClCompile Include="base\WinApp.cpp">
+      <Filter>MyEngines\ソース ファイル\base</Filter>
     </ClCompile>
-    <ClCompile Include="MyEngine.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="base\DirectXCommon.cpp">
+      <Filter>MyEngines\ソース ファイル\base</Filter>
     </ClCompile>
-    <ClCompile Include="DirectXCommon.cpp">
-      <Filter>base</Filter>
+    <ClCompile Include="base\MyEngine.cpp">
+      <Filter>MyEngines\ソース ファイル\base</Filter>
+    </ClCompile>
+    <ClCompile Include="base\Mymath.cpp">
+      <Filter>MyEngines\ソース ファイル\base</Filter>
+    </ClCompile>
+    <ClCompile Include="base\MyUtility.cpp">
+      <Filter>MyEngines\ソース ファイル\base</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="base\CanvasTool.cpp">
+      <Filter>MyEngines\ソース ファイル\base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Object3d.VS.hlsl">
-      <Filter>hlsl</Filter>
-    </FxCompile>
-    <FxCompile Include="Object3d.PS.hlsl">
-      <Filter>hlsl</Filter>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Mymath.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="externals\imgui\imconfig.h">
       <Filter>imgui</Filter>
     </ClInclude>
@@ -100,35 +99,41 @@
     <ClInclude Include="externals\imgui\imstb_truetype.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="MyConst.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="math\Vector4.h">
-      <Filter>math</Filter>
+      <Filter>MyEngines\ヘッダー ファイル\math</Filter>
     </ClInclude>
     <ClInclude Include="math\Vector2.h">
-      <Filter>math</Filter>
+      <Filter>MyEngines\ヘッダー ファイル\math</Filter>
     </ClInclude>
     <ClInclude Include="math\Vector3.h">
-      <Filter>math</Filter>
+      <Filter>MyEngines\ヘッダー ファイル\math</Filter>
     </ClInclude>
     <ClInclude Include="math\Matrix4x4.h">
-      <Filter>math</Filter>
+      <Filter>MyEngines\ヘッダー ファイル\math</Filter>
     </ClInclude>
     <ClInclude Include="math\Matrix3x3.h">
-      <Filter>math</Filter>
+      <Filter>MyEngines\ヘッダー ファイル\math</Filter>
     </ClInclude>
-    <ClInclude Include="WinApp.h">
-      <Filter>base</Filter>
+    <ClInclude Include="base\DirectXCommon.h">
+      <Filter>MyEngines\ヘッダー ファイル\base</Filter>
     </ClInclude>
-    <ClInclude Include="MyEngine.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="base\MyConst.h">
+      <Filter>MyEngines\ヘッダー ファイル\base</Filter>
     </ClInclude>
-    <ClInclude Include="DirectXCommon.h">
-      <Filter>base</Filter>
+    <ClInclude Include="base\MyEngine.h">
+      <Filter>MyEngines\ヘッダー ファイル\base</Filter>
     </ClInclude>
-    <ClInclude Include="SafeDelete.h">
-      <Filter>base</Filter>
+    <ClInclude Include="base\Mymath.h">
+      <Filter>MyEngines\ヘッダー ファイル\base</Filter>
+    </ClInclude>
+    <ClInclude Include="base\MyUtility.h">
+      <Filter>MyEngines\ヘッダー ファイル\base</Filter>
+    </ClInclude>
+    <ClInclude Include="base\WinApp.h">
+      <Filter>MyEngines\ヘッダー ファイル\base</Filter>
+    </ClInclude>
+    <ClInclude Include="base\CanvasTool.h">
+      <Filter>MyEngines\ヘッダー ファイル\base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -137,8 +142,16 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Object3d.hlsli">
-      <Filter>hlsl</Filter>
+    <FxCompile Include="resources\shaders\Object3d.PS.hlsl">
+      <Filter>リソース ファイル\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\Object3d.VS.hlsl">
+      <Filter>リソース ファイル\shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\shaders\Object3d.hlsli">
+      <Filter>リソース ファイル\shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

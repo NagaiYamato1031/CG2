@@ -714,7 +714,7 @@ Matrix4x4 Mymath::Inverse(const Matrix4x4& matrix) {
 			matrix.m[0][2] * matrix.m[1][1] * matrix.m[3][0] +
 			matrix.m[0][1] * matrix.m[1][0] * matrix.m[3][2] +
 			matrix.m[0][0] * matrix.m[1][2] * matrix.m[3][1]);
-
+	
 	float det44 = 1 / det *
 		(+matrix.m[0][0] * matrix.m[1][1] * matrix.m[2][2] +
 			matrix.m[0][1] * matrix.m[1][2] * matrix.m[2][0] +
