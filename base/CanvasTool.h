@@ -59,12 +59,12 @@ private:
 	};
 	struct CBuffer {
 		Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource_;	// 定数バッファ
-		Vector4* wvpData_;										// 定数リソース
+		Matrix4x4* wvpData_;										// 定数リソース
 	};
 
 	struct VectorPosColor {
 		Vector4 position;	// 座標
-		//Vector4 color;		// 色
+		Vector4 color;		// 色
 	};
 	struct VertexTriangle {
 		Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;	// GPU上の頂点データの格納場所

@@ -449,7 +449,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			{ -0.5f,-0.5f,0.0f },
 			{ 0.0f,0.5f,0.0f },
 			{ 0.5f,-0.5f,0.0f },
-			0x777777FF
+			0x77FFFFFF
 		);
 		
 		MyEngine::EndFrame();

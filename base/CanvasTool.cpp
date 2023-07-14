@@ -15,7 +15,7 @@ void CanvasTool::Initialize(DirectXCommon* directXCommon) {
 
 	InitializeDXC();
 	CreateGraphicsPipeLineState();
-	CreateConstantBuffer();
+	//CreateConstantBuffer();
 	CreateVertexTriangle();
 }
 
@@ -35,14 +35,13 @@ void CanvasTool::DrawTriangle(Vector3 pos1, Vector3 pos2, Vector3 pos3, unsigned
 
 	// vertexDataに座標を代入
 	vertexTriangle_->vertexData_[index].position = { pos1.x,pos1.y,pos1.z,1.0f };
-	//vertexTriangle_->vertexData_[index].color = HexColorToVector4(color);
-	*cBuffer_->wvpData_ = HexColorToVector4(color);;
+	vertexTriangle_->vertexData_[index].color = HexColorToVector4(color);
 
 	vertexTriangle_->vertexData_[index + 1].position = { pos2.x,pos2.y,pos2.z,1.0f };
-	//vertexTriangle_->vertexData_[index + 1].color = HexColorToVector4(color);
+	vertexTriangle_->vertexData_[index + 1].color = HexColorToVector4(color);
 
 	vertexTriangle_->vertexData_[index + 2].position = { pos3.x,pos3.y,pos3.z,1.0f };
-	//vertexTriangle_->vertexData_[index + 2].color = HexColorToVector4(color);
+	vertexTriangle_->vertexData_[index + 2].color = HexColorToVector4(color);
 
 
 	// コマンドを積む
@@ -54,7 +53,7 @@ void CanvasTool::DrawTriangle(Vector3 pos1, Vector3 pos2, Vector3 pos3, unsigned
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// wvp用のCBufferの場所を設定
-	commandList->SetGraphicsRootConstantBufferView(0, cBuffer_->wvpResource_->GetGPUVirtualAddress());
+	commandList->SetGraphicsRootConstantBufferView(0, vertexTriangle_->vertexResource_->GetGPUVirtualAddress());
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス
 	commandList->DrawInstanced(kVertexCountTriangle_, 1, vertexTriangle_->triangleCount_ * 3, 0);
 
@@ -97,7 +96,7 @@ void CanvasTool::CreateRootSignature() {
 	// RootParameter作成。複数設定できるので配列。今回は結果1つなので長さ1の配列
 	D3D12_ROOT_PARAMETER rootParameters[1] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う
-	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		// PixelShaderで使う
+	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	// VertexlShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0;						// レジスタ番号0とバインド
 	descriptionRootSignature.pParameters = rootParameters;					// ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters);		// 配列の長さ
@@ -131,7 +130,7 @@ D3D12_INPUT_LAYOUT_DESC CanvasTool::CreateInputLayout() {
 
 	static D3D12_INPUT_ELEMENT_DESC inputElementDescs[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		//{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 	};
 
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc = {};
@@ -212,13 +211,13 @@ void CanvasTool::CreateConstantBuffer() {
 	cBuffer_ = std::make_unique<CBuffer>();
 
 	// wvpのリソースを作る。サイズはMatrix4x4 1つ分
-	cBuffer_->wvpResource_ = CreateBufferResource(sizeof(Vector4));
+	cBuffer_->wvpResource_ = CreateBufferResource(sizeof(Matrix4x4));
 	// データを書き込む
 	cBuffer_->wvpData_ = nullptr;
 	// 書き込むためのアドレスを取得
 	cBuffer_->wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&cBuffer_->wvpData_));
 	// 単位行列を書き込んでおく
-	*cBuffer_->wvpData_ = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	*cBuffer_->wvpData_ = Mymath::MakeIdentity4x4();
 }
 
 void CanvasTool::CreateVertexTriangleBufferView() {
