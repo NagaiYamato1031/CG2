@@ -7,7 +7,7 @@
 #pragma comment(lib, "dxgi.lib")
 
 #include <wrl.h>
-#include "WinApp.h"
+#include "./WinApp.h"
 
 class DirectXCommon
 {

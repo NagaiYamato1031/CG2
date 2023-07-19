@@ -25,11 +25,14 @@
     <Filter Include="MyEngines\ヘッダー ファイル\base">
       <UniqueIdentifier>{ba276684-9046-4730-9e17-d0dd274ef54b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="リソース ファイル\shaders">
+      <UniqueIdentifier>{ece7677c-d324-478e-a633-f2679e6ee3e4}</UniqueIdentifier>
+    </Filter>
     <Filter Include="MyEngines\ヘッダー ファイル\math">
       <UniqueIdentifier>{5b72412f-9b6e-4b9c-9033-4a034d5ff405}</UniqueIdentifier>
     </Filter>
-    <Filter Include="リソース ファイル\shaders">
-      <UniqueIdentifier>{ece7677c-d324-478e-a633-f2679e6ee3e4}</UniqueIdentifier>
+    <Filter Include="MyEngines\ソース ファイル\math">
+      <UniqueIdentifier>{5813816b-cf3b-4cd1-9723-ea5656f9891a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -63,15 +66,18 @@
     <ClCompile Include="base\MyEngine.cpp">
       <Filter>MyEngines\ソース ファイル\base</Filter>
     </ClCompile>
-    <ClCompile Include="base\Mymath.cpp">
-      <Filter>MyEngines\ソース ファイル\base</Filter>
-    </ClCompile>
     <ClCompile Include="base\MyUtility.cpp">
       <Filter>MyEngines\ソース ファイル\base</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="base\CanvasTool.cpp">
       <Filter>MyEngines\ソース ファイル\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>MyEngines\ソース ファイル\base</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Mymath.cpp">
+      <Filter>MyEngines\ソース ファイル\math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -117,13 +123,7 @@
     <ClInclude Include="base\DirectXCommon.h">
       <Filter>MyEngines\ヘッダー ファイル\base</Filter>
     </ClInclude>
-    <ClInclude Include="base\MyConst.h">
-      <Filter>MyEngines\ヘッダー ファイル\base</Filter>
-    </ClInclude>
     <ClInclude Include="base\MyEngine.h">
-      <Filter>MyEngines\ヘッダー ファイル\base</Filter>
-    </ClInclude>
-    <ClInclude Include="base\Mymath.h">
       <Filter>MyEngines\ヘッダー ファイル\base</Filter>
     </ClInclude>
     <ClInclude Include="base\MyUtility.h">
@@ -134,6 +134,12 @@
     </ClInclude>
     <ClInclude Include="base\CanvasTool.h">
       <Filter>MyEngines\ヘッダー ファイル\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>MyEngines\ヘッダー ファイル\base</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Mymath.h">
+      <Filter>MyEngines\ヘッダー ファイル\math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

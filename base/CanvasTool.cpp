@@ -1,8 +1,8 @@
-#include "CanvasTool.h"
+#include "./CanvasTool.h"
 #include <cassert>
 #include <format>
-#include "MyUtility.h"
-#include "Mymath.h"
+#include "./MyUtility.h"
+#include "../math/Mymath.h"
 
 
 CanvasTool* CanvasTool::GetInstance() {
@@ -21,6 +21,35 @@ void CanvasTool::Initialize(DirectXCommon* directXCommon) {
 
 void CanvasTool::Reset() {
 	vertexTriangle_->triangleCount_ = 0;
+}
+
+ID3D12Resource* CanvasTool::CreateBufferResource(size_t sizeInBytes) {
+	HRESULT hr = S_FALSE;
+
+	ID3D12Resource* resultResource;
+
+	// リソース用のヒープの設定
+	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
+	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;	// UploadHeapを使う
+	// リソースの設定
+	D3D12_RESOURCE_DESC resultResourceDesc{};
+	// バッファリソース。テクスチャの場合はまた別の設定をする
+	resultResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	resultResourceDesc.Width = sizeInBytes; // リソースのサイズ
+	// バッファの場合はこれらは1にする決まり
+	resultResourceDesc.Height = 1;
+	resultResourceDesc.DepthOrArraySize = 1;
+	resultResourceDesc.MipLevels = 1;
+	resultResourceDesc.SampleDesc.Count = 1;
+	// バッファの場合はこれにする決まり
+	resultResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	// 実際にリソースを作る
+	hr = dxCommon_->GetDevice()->CreateCommittedResource(
+		&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &resultResourceDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&resultResource));
+	assert(SUCCEEDED(hr));
+
+	return resultResource;
 }
 
 #pragma region 描画関数
@@ -241,34 +270,6 @@ void CanvasTool::CreateVertexTriangle() {
 }
 
 
-ID3D12Resource* CanvasTool::CreateBufferResource(size_t sizeInBytes) {
-	HRESULT hr = S_FALSE;
-
-	ID3D12Resource* vertexResource;
-
-	// 頂点リソース用のヒープの設定
-	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
-	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;	// UploadHeapを使う
-	// 頂点リソースの設定
-	D3D12_RESOURCE_DESC vertexResourceDesc{};
-	// バッファリソース。テクスチャの場合はまた別の設定をする
-	vertexResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	vertexResourceDesc.Width = sizeInBytes; // リソースのサイズ
-	// バッファの場合はこれらは1にする決まり
-	vertexResourceDesc.Height = 1;
-	vertexResourceDesc.DepthOrArraySize = 1;
-	vertexResourceDesc.MipLevels = 1;
-	vertexResourceDesc.SampleDesc.Count = 1;
-	// バッファの場合はこれにする決まり
-	vertexResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-	// 実際に頂点リソースを作る
-	hr = dxCommon_->GetDevice()->CreateCommittedResource(
-		&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &vertexResourceDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&vertexResource));
-	assert(SUCCEEDED(hr));
-
-	return vertexResource;
-}
 
 IDxcBlob* CanvasTool::CompileShader(const std::wstring& filePath, const wchar_t* profile, IDxcUtils* dxUtils, IDxcCompiler3* dxcCompiler, IDxcIncludeHandler* includeHandler) {
 

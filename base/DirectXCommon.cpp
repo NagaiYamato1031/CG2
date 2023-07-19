@@ -1,5 +1,5 @@
-#include "DirectXCommon.h"
-#include "MyUtility.h"
+#include "./DirectXCommon.h"
+#include "./MyUtility.h"
 
 #include <cassert>
 #include <format>

@@ -1,6 +1,6 @@
-#include "WinApp.h"
+#include "./WinApp.h"
 #include <cstdint>
-#include "MyUtility.h"
+#include "./MyUtility.h"
 
 WinApp* WinApp::GetInstance() {
 	static WinApp instance;

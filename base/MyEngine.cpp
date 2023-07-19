@@ -1,6 +1,6 @@
-#include "MyEngine.h"
-#include "MyUtility.h"
-#include "Mymath.h"
+#include "./MyEngine.h"
+#include "./MyUtility.h"
+#include "../math/Mymath.h"
 #include <dxgidebug.h>
 #pragma comment(lib, "dxguid.lib")
 

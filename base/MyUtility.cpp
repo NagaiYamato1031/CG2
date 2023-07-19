@@ -1,4 +1,4 @@
-#include "MyUtility.h"
+#include "./MyUtility.h"
 #include <dxgidebug.h>
 
 void MyUtility::Log(const std::string& message) {

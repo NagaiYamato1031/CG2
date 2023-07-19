@@ -1,7 +1,7 @@
-#include "base/MyConst.h"
-#include "base/Mymath.h"
+#include "./base/MyConst.h"
+#include "./math/Mymath.h"
 
-#include "base/MyEngine.h"
+#include "./base/MyEngine.h"
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {

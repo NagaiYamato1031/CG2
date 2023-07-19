@@ -70,14 +70,14 @@ struct AABB
 	Vector2 max;	// 最大点
 };
 
-/// <summary>
-/// トランスフォーム
-/// </summary>
-struct Transform {
-	Vector3 scale;
-	Vector3 rotate;
-	Vector3 translate;
-};
+///// <summary>
+///// トランスフォーム
+///// </summary>
+//struct Transform {
+//	Vector3 scale;
+//	Vector3 rotate;
+//	Vector3 translate;
+//};
 
 /// <summary>
 /// 頂点データ

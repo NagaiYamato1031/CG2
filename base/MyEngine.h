@@ -1,8 +1,8 @@
 #pragma once
 
-#include "WinApp.h"
-#include "DirectXCommon.h"
-#include "CanvasTool.h"
+#include "./WinApp.h"
+#include "./DirectXCommon.h"
+#include "./CanvasTool.h"
 class MyEngine
 {
 public:

@@ -1,7 +1,7 @@
-#include ".math/Mymath.h"
+#include "./Mymath.h"
 #include <cassert>
 #include <cmath>
-#include "./MyConst.h"
+#include "../base/MyConst.h"
 
 #pragma region Objects
 

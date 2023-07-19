@@ -1,5 +1,5 @@
 #pragma once
-#include "DirectXCommon.h"
+#include "./DirectXCommon.h"
 #include "../math/Vector3.h"
 #include "../math/Vector4.h"
 #include "../math/Matrix4x4.h"
@@ -27,6 +27,11 @@ public:
 	/// 描画数のリセット
 	/// </summary>
 	void Reset();
+
+	/// <summary>
+	/// VertexResourceを作成
+	/// </summary>
+	ID3D12Resource* CreateBufferResource(size_t);
 
 #pragma region 描画関数
 
@@ -150,11 +155,6 @@ private: // 非公開のメンバ関数
 	/// </summary>
 	void CreateVertexTriangle();
 
-
-	/// <summary>
-	/// VertexResourceを作成
-	/// </summary>
-	ID3D12Resource* CreateBufferResource(size_t);
 
 	// 生成関数
 #pragma endregion
