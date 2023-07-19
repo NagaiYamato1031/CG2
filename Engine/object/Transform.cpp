@@ -1,6 +1,6 @@
 #include "./Transform.h"
-#include "./math/Mymath.h"
-#include "./base/CanvasTool.h"
+#include "../math/Mymath.h"
+#include "../base/CanvasTool.h"
 
 Transform::Transform() {
 	scale_ = { 1.0f,1.0f,1.0f };

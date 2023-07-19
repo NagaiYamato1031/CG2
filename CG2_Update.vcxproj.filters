@@ -11,28 +11,17 @@
     <Filter Include="MyEngines">
       <UniqueIdentifier>{2c93d9d7-dde6-4ab6-a293-938f762b2bc9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MyEngines\ソース ファイル">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="MyEngines\ソース ファイル\base">
-      <UniqueIdentifier>{ebc4d6c8-1079-4918-bb13-2a4777fea6ca}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="MyEngines\ヘッダー ファイル">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="MyEngines\ヘッダー ファイル\base">
-      <UniqueIdentifier>{ba276684-9046-4730-9e17-d0dd274ef54b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="リソース ファイル\shaders">
       <UniqueIdentifier>{ece7677c-d324-478e-a633-f2679e6ee3e4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MyEngines\ヘッダー ファイル\math">
-      <UniqueIdentifier>{5b72412f-9b6e-4b9c-9033-4a034d5ff405}</UniqueIdentifier>
+    <Filter Include="MyEngines\base">
+      <UniqueIdentifier>{f8948f9d-0421-4a3e-8c58-0c0f26166250}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MyEngines\ソース ファイル\math">
-      <UniqueIdentifier>{5813816b-cf3b-4cd1-9723-ea5656f9891a}</UniqueIdentifier>
+    <Filter Include="MyEngines\object">
+      <UniqueIdentifier>{c4ef806a-e154-4996-9b01-585cf63af37e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MyEngines\math">
+      <UniqueIdentifier>{5a8cd1e0-c932-4b01-a36a-327bef2ee988}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -57,27 +46,27 @@
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="base\WinApp.cpp">
-      <Filter>MyEngines\ソース ファイル\base</Filter>
-    </ClCompile>
-    <ClCompile Include="base\DirectXCommon.cpp">
-      <Filter>MyEngines\ソース ファイル\base</Filter>
-    </ClCompile>
-    <ClCompile Include="base\MyEngine.cpp">
-      <Filter>MyEngines\ソース ファイル\base</Filter>
-    </ClCompile>
-    <ClCompile Include="base\MyUtility.cpp">
-      <Filter>MyEngines\ソース ファイル\base</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="base\CanvasTool.cpp">
-      <Filter>MyEngines\ソース ファイル\base</Filter>
+    <ClCompile Include="Engine\base\CanvasTool.cpp">
+      <Filter>MyEngines\base</Filter>
     </ClCompile>
-    <ClCompile Include="Transform.cpp">
-      <Filter>MyEngines\ソース ファイル\base</Filter>
+    <ClCompile Include="Engine\base\DirectXCommon.cpp">
+      <Filter>MyEngines\base</Filter>
     </ClCompile>
-    <ClCompile Include="math\Mymath.cpp">
-      <Filter>MyEngines\ソース ファイル\math</Filter>
+    <ClCompile Include="Engine\base\MyEngine.cpp">
+      <Filter>MyEngines\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\MyUtility.cpp">
+      <Filter>MyEngines\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\base\WinApp.cpp">
+      <Filter>MyEngines\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\math\Mymath.cpp">
+      <Filter>MyEngines\math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\object\Transform.cpp">
+      <Filter>MyEngines\object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -105,41 +94,44 @@
     <ClInclude Include="externals\imgui\imstb_truetype.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="math\Vector4.h">
-      <Filter>MyEngines\ヘッダー ファイル\math</Filter>
+    <ClInclude Include="Engine\base\CanvasTool.h">
+      <Filter>MyEngines\base</Filter>
     </ClInclude>
-    <ClInclude Include="math\Vector2.h">
-      <Filter>MyEngines\ヘッダー ファイル\math</Filter>
+    <ClInclude Include="Engine\base\DirectXCommon.h">
+      <Filter>MyEngines\base</Filter>
     </ClInclude>
-    <ClInclude Include="math\Vector3.h">
-      <Filter>MyEngines\ヘッダー ファイル\math</Filter>
+    <ClInclude Include="Engine\base\MyConst.h">
+      <Filter>MyEngines\base</Filter>
     </ClInclude>
-    <ClInclude Include="math\Matrix4x4.h">
-      <Filter>MyEngines\ヘッダー ファイル\math</Filter>
+    <ClInclude Include="Engine\base\MyEngine.h">
+      <Filter>MyEngines\base</Filter>
     </ClInclude>
-    <ClInclude Include="math\Matrix3x3.h">
-      <Filter>MyEngines\ヘッダー ファイル\math</Filter>
+    <ClInclude Include="Engine\base\MyUtility.h">
+      <Filter>MyEngines\base</Filter>
     </ClInclude>
-    <ClInclude Include="base\DirectXCommon.h">
-      <Filter>MyEngines\ヘッダー ファイル\base</Filter>
+    <ClInclude Include="Engine\base\WinApp.h">
+      <Filter>MyEngines\base</Filter>
     </ClInclude>
-    <ClInclude Include="base\MyEngine.h">
-      <Filter>MyEngines\ヘッダー ファイル\base</Filter>
+    <ClInclude Include="Engine\math\Matrix3x3.h">
+      <Filter>MyEngines\math</Filter>
     </ClInclude>
-    <ClInclude Include="base\MyUtility.h">
-      <Filter>MyEngines\ヘッダー ファイル\base</Filter>
+    <ClInclude Include="Engine\math\Matrix4x4.h">
+      <Filter>MyEngines\math</Filter>
     </ClInclude>
-    <ClInclude Include="base\WinApp.h">
-      <Filter>MyEngines\ヘッダー ファイル\base</Filter>
+    <ClInclude Include="Engine\math\Mymath.h">
+      <Filter>MyEngines\math</Filter>
     </ClInclude>
-    <ClInclude Include="base\CanvasTool.h">
-      <Filter>MyEngines\ヘッダー ファイル\base</Filter>
+    <ClInclude Include="Engine\math\Vector2.h">
+      <Filter>MyEngines\math</Filter>
     </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>MyEngines\ヘッダー ファイル\base</Filter>
+    <ClInclude Include="Engine\math\Vector3.h">
+      <Filter>MyEngines\math</Filter>
     </ClInclude>
-    <ClInclude Include="math\Mymath.h">
-      <Filter>MyEngines\ヘッダー ファイル\math</Filter>
+    <ClInclude Include="Engine\math\Vector4.h">
+      <Filter>MyEngines\math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\object\Transform.h">
+      <Filter>MyEngines\object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
