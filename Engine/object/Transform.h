@@ -1,5 +1,8 @@
 #pragma once
+#include "../math/Vector2.h"
 #include "../math/Vector3.h"
+#include "../math/Vector4.h"
+#include "../math/Matrix3x3.h"
 #include "../math/Matrix4x4.h"
 
 #include <d3d12.h>
@@ -23,6 +26,10 @@ public:
 	/// 初期化
 	/// </summary>
 	virtual void Initialize();
+	/// <summary>
+	/// 純粋仮想初期化関数
+	/// </summary>
+	virtual void SuccessorInitialize() = 0;
 
 	/// <summary>
 	/// 行列更新
@@ -48,9 +55,6 @@ public:
 
 #pragma endregion
 
-
-
-
 protected:
 
 	// スケール
@@ -73,9 +77,17 @@ class TransformEx : public Transform {
 public:
 
 	/// <summary>
+	/// コンストラクタ
+	/// </summary>
+	TransformEx();
+
+public:
+
+	/// <summary>
 	/// 初期化
 	/// </summary>
 	void Initialize() override;
+	virtual void SuccessorInitialize() = 0;
 
 	/// <summary>
 	/// 行列更新
@@ -87,6 +99,9 @@ public:
 	/// </summary>
 	void TransferMatrix();
 
+
+	ID3D12Resource* GetResource()const { return cBuffer_->resource_.Get(); };
+
 private:
 
 	/// <summary>
@@ -96,10 +111,10 @@ private:
 
 private:
 
-	struct ConstantBufferData
+	/*struct ConstantBufferData
 	{
 		Matrix4x4* wvpData_;
-	};
+	};*/
 	struct CBuffer
 	{
 		Microsoft::WRL::ComPtr<ID3D12Resource> resource_;

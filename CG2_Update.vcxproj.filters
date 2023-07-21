@@ -14,14 +14,17 @@
     <Filter Include="リソース ファイル\shaders">
       <UniqueIdentifier>{ece7677c-d324-478e-a633-f2679e6ee3e4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MyEngines\base">
+    <Filter Include="MyEngines\Adapter">
+      <UniqueIdentifier>{e78c7f61-f8ba-477b-8092-551edfb374be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MyEngines\Base">
       <UniqueIdentifier>{f8948f9d-0421-4a3e-8c58-0c0f26166250}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MyEngines\object">
-      <UniqueIdentifier>{c4ef806a-e154-4996-9b01-585cf63af37e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="MyEngines\math">
+    <Filter Include="MyEngines\Math">
       <UniqueIdentifier>{5a8cd1e0-c932-4b01-a36a-327bef2ee988}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MyEngines\Object">
+      <UniqueIdentifier>{c4ef806a-e154-4996-9b01-585cf63af37e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -48,25 +51,31 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\base\CanvasTool.cpp">
-      <Filter>MyEngines\base</Filter>
+      <Filter>MyEngines\Base</Filter>
     </ClCompile>
     <ClCompile Include="Engine\base\DirectXCommon.cpp">
-      <Filter>MyEngines\base</Filter>
+      <Filter>MyEngines\Base</Filter>
     </ClCompile>
     <ClCompile Include="Engine\base\MyEngine.cpp">
-      <Filter>MyEngines\base</Filter>
+      <Filter>MyEngines\Base</Filter>
     </ClCompile>
     <ClCompile Include="Engine\base\MyUtility.cpp">
-      <Filter>MyEngines\base</Filter>
+      <Filter>MyEngines\Base</Filter>
     </ClCompile>
     <ClCompile Include="Engine\base\WinApp.cpp">
-      <Filter>MyEngines\base</Filter>
+      <Filter>MyEngines\Base</Filter>
     </ClCompile>
     <ClCompile Include="Engine\math\Mymath.cpp">
-      <Filter>MyEngines\math</Filter>
+      <Filter>MyEngines\Math</Filter>
     </ClCompile>
     <ClCompile Include="Engine\object\Transform.cpp">
-      <Filter>MyEngines\object</Filter>
+      <Filter>MyEngines\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\object\Triangle.cpp">
+      <Filter>MyEngines\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Adapter\MyEngine.cpp">
+      <Filter>MyEngines\Adapter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -95,43 +104,49 @@
       <Filter>imgui</Filter>
     </ClInclude>
     <ClInclude Include="Engine\base\CanvasTool.h">
-      <Filter>MyEngines\base</Filter>
+      <Filter>MyEngines\Base</Filter>
     </ClInclude>
     <ClInclude Include="Engine\base\DirectXCommon.h">
-      <Filter>MyEngines\base</Filter>
+      <Filter>MyEngines\Base</Filter>
     </ClInclude>
     <ClInclude Include="Engine\base\MyConst.h">
-      <Filter>MyEngines\base</Filter>
+      <Filter>MyEngines\Base</Filter>
     </ClInclude>
     <ClInclude Include="Engine\base\MyEngine.h">
-      <Filter>MyEngines\base</Filter>
+      <Filter>MyEngines\Base</Filter>
     </ClInclude>
     <ClInclude Include="Engine\base\MyUtility.h">
-      <Filter>MyEngines\base</Filter>
+      <Filter>MyEngines\Base</Filter>
     </ClInclude>
     <ClInclude Include="Engine\base\WinApp.h">
-      <Filter>MyEngines\base</Filter>
+      <Filter>MyEngines\Base</Filter>
     </ClInclude>
     <ClInclude Include="Engine\math\Matrix3x3.h">
-      <Filter>MyEngines\math</Filter>
+      <Filter>MyEngines\Math</Filter>
     </ClInclude>
     <ClInclude Include="Engine\math\Matrix4x4.h">
-      <Filter>MyEngines\math</Filter>
+      <Filter>MyEngines\Math</Filter>
     </ClInclude>
     <ClInclude Include="Engine\math\Mymath.h">
-      <Filter>MyEngines\math</Filter>
+      <Filter>MyEngines\Math</Filter>
     </ClInclude>
     <ClInclude Include="Engine\math\Vector2.h">
-      <Filter>MyEngines\math</Filter>
+      <Filter>MyEngines\Math</Filter>
     </ClInclude>
     <ClInclude Include="Engine\math\Vector3.h">
-      <Filter>MyEngines\math</Filter>
+      <Filter>MyEngines\Math</Filter>
     </ClInclude>
     <ClInclude Include="Engine\math\Vector4.h">
-      <Filter>MyEngines\math</Filter>
+      <Filter>MyEngines\Math</Filter>
     </ClInclude>
     <ClInclude Include="Engine\object\Transform.h">
-      <Filter>MyEngines\object</Filter>
+      <Filter>MyEngines\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\object\Triangle.h">
+      <Filter>MyEngines\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Adapter\MyEngine.h">
+      <Filter>MyEngines\Adapter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
