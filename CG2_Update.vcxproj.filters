@@ -14,9 +14,6 @@
     <Filter Include="リソース ファイル\shaders">
       <UniqueIdentifier>{ece7677c-d324-478e-a633-f2679e6ee3e4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MyEngines\Adapter">
-      <UniqueIdentifier>{e78c7f61-f8ba-477b-8092-551edfb374be}</UniqueIdentifier>
-    </Filter>
     <Filter Include="MyEngines\Base">
       <UniqueIdentifier>{f8948f9d-0421-4a3e-8c58-0c0f26166250}</UniqueIdentifier>
     </Filter>
@@ -73,9 +70,6 @@
     </ClCompile>
     <ClCompile Include="Engine\object\Triangle.cpp">
       <Filter>MyEngines\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Adapter\MyEngine.cpp">
-      <Filter>MyEngines\Adapter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -144,9 +138,6 @@
     </ClInclude>
     <ClInclude Include="Engine\object\Triangle.h">
       <Filter>MyEngines\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="Adapter\MyEngine.h">
-      <Filter>MyEngines\Adapter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

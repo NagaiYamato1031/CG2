@@ -77,14 +77,14 @@ bool Mymath::IsCollision(const Plane& plane, const Segment& segment) {
 #pragma region Triangle
 
 bool Mymath::IsCollision(const Triangle& triangle, const Line& line) {
-	Vector3 v01 = triangle.vertices[1] - triangle.vertices[0];
-	Vector3 v12 = triangle.vertices[2] - triangle.vertices[1];
-	Vector3 v20 = triangle.vertices[0] - triangle.vertices[2];
+	Vector3 v01 = triangle.vertices[1].position - triangle.vertices[0].position;
+	Vector3 v12 = triangle.vertices[2].position - triangle.vertices[1].position;
+	Vector3 v20 = triangle.vertices[0].position - triangle.vertices[2].position;
 
 	Vector3 normal = Normalize(Cross(v01, v12));
 	Plane plane;
 	plane.normal = normal;
-	plane.distance = Dot(triangle.vertices[0], normal);
+	plane.distance = Dot(triangle.vertices[0].position, normal);
 
 	// 垂直判定を行うために、法線と線の内積を求める
 	float dot = Dot(plane.normal, line.diff);
@@ -98,9 +98,9 @@ bool Mymath::IsCollision(const Triangle& triangle, const Line& line) {
 	// 衝突点 p
 	Vector3 p = line.origin + line.diff * t;
 
-	Vector3 v1p = p - triangle.vertices[1];
-	Vector3 v2p = p - triangle.vertices[2];
-	Vector3 v0p = p - triangle.vertices[0];
+	Vector3 v1p = p - triangle.vertices[1].position;
+	Vector3 v2p = p - triangle.vertices[2].position;
+	Vector3 v0p = p - triangle.vertices[0].position;
 
 	// 各辺を結んだベクトルと、頂点と衝突点 p を結んだベクトルのクロス積を取る
 	Vector3 cross01 = Cross(v01, v1p);
@@ -115,14 +115,14 @@ bool Mymath::IsCollision(const Triangle& triangle, const Line& line) {
 	return false;
 }
 bool Mymath::IsCollision(const Triangle& triangle, const Ray& ray) {
-	Vector3 v01 = triangle.vertices[1] - triangle.vertices[0];
-	Vector3 v12 = triangle.vertices[2] - triangle.vertices[1];
-	Vector3 v20 = triangle.vertices[0] - triangle.vertices[2];
+	Vector3 v01 = triangle.vertices[1].position - triangle.vertices[0].position;
+	Vector3 v12 = triangle.vertices[2].position - triangle.vertices[1].position;
+	Vector3 v20 = triangle.vertices[0].position - triangle.vertices[2].position;
 
 	Vector3 normal = Normalize(Cross(v01, v12));
 	Plane plane;
 	plane.normal = normal;
-	plane.distance = Dot(triangle.vertices[0], normal);
+	plane.distance = Dot(triangle.vertices[0].position, normal);
 
 	// 垂直判定を行うために、法線と線の内積を求める
 	float dot = Dot(plane.normal, ray.diff);
@@ -140,9 +140,9 @@ bool Mymath::IsCollision(const Triangle& triangle, const Ray& ray) {
 	// 衝突点 p
 	Vector3 p = ray.origin + ray.diff * t;
 
-	Vector3 v1p = p - triangle.vertices[1];
-	Vector3 v2p = p - triangle.vertices[2];
-	Vector3 v0p = p - triangle.vertices[0];
+	Vector3 v1p = p - triangle.vertices[1].position;
+	Vector3 v2p = p - triangle.vertices[2].position;
+	Vector3 v0p = p - triangle.vertices[0].position;
 
 	// 各辺を結んだベクトルと、頂点と衝突点 p を結んだベクトルのクロス積を取る
 	Vector3 cross01 = Cross(v01, v1p);
@@ -157,14 +157,14 @@ bool Mymath::IsCollision(const Triangle& triangle, const Ray& ray) {
 	return false;
 }
 bool Mymath::IsCollision(const Triangle& triangle, const Segment& segment) {
-	Vector3 v01 = triangle.vertices[1] - triangle.vertices[0];
-	Vector3 v12 = triangle.vertices[2] - triangle.vertices[1];
-	Vector3 v20 = triangle.vertices[0] - triangle.vertices[2];
+	Vector3 v01 = triangle.vertices[1].position - triangle.vertices[0].position;
+	Vector3 v12 = triangle.vertices[2].position - triangle.vertices[1].position;
+	Vector3 v20 = triangle.vertices[0].position - triangle.vertices[2].position;
 
 	Vector3 normal = Normalize(Cross(v01, v12));
 	Plane plane;
 	plane.normal = normal;
-	plane.distance = Dot(triangle.vertices[0], normal);
+	plane.distance = Dot(triangle.vertices[0].position, normal);
 
 	// 垂直判定を行うために、法線と線の内積を求める
 	float dot = Dot(plane.normal, segment.diff);
@@ -182,9 +182,9 @@ bool Mymath::IsCollision(const Triangle& triangle, const Segment& segment) {
 	// 衝突点 p
 	Vector3 p = segment.origin + segment.diff * t;
 
-	Vector3 v1p = p - triangle.vertices[1];
-	Vector3 v2p = p - triangle.vertices[2];
-	Vector3 v0p = p - triangle.vertices[0];
+	Vector3 v1p = p - triangle.vertices[1].position;
+	Vector3 v2p = p - triangle.vertices[2].position;
+	Vector3 v0p = p - triangle.vertices[0].position;
 
 	// 各辺を結んだベクトルと、頂点と衝突点 p を結んだベクトルのクロス積を取る
 	Vector3 cross01 = Cross(v01, v1p);

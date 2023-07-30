@@ -5,6 +5,8 @@ class Triangle : public TransformEx {
 public:
 
 	Triangle();
+	Triangle(const Triangle& obj);
+	const Triangle& operator=(const Triangle& obj);
 	~Triangle();
 
 	void SuccessorInitialize() override;
@@ -13,7 +15,7 @@ public:
 public:
 
 	struct VectorPosColor {
-		Vector4 position;	// 座標
+		Vector3 position;	// 座標
 		Vector4 color;		// 色
 	};
 public:

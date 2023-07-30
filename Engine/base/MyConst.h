@@ -7,6 +7,7 @@
 #include "../math/Vector4.h"
 #include "../math/Matrix3x3.h"
 #include "../math/Matrix4x4.h"
+#include "../object/Triangle.h"
 
 /// <summary>
 /// 球体
@@ -56,10 +57,10 @@ struct Plane
 /// <summary>
 /// 三角形
 /// </summary>
-struct Triangle
-{
-	Vector3 vertices[3];	// 頂点
-};
+//struct Triangle
+//{
+//	Vector3 vertices[3];	// 頂点
+//};
 
 /// <summary>
 /// 軸平行境界箱

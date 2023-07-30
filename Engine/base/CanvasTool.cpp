@@ -53,8 +53,44 @@ ID3D12Resource* CanvasTool::CreateBufferResource(size_t sizeInBytes) {
 }
 
 #pragma region 描画関数
+//
+//void CanvasTool::DrawTriangle(Vector3 pos1, Vector3 pos2, Vector3 pos3, unsigned int color) {
+//
+//	// 最大数を超えていないかチェック
+//	assert(vertexTriangle_->triangleCount_ < kMaxTriangleCount_);
+//
+//	// Resourceにデータを書き込む 
+//	int index = vertexTriangle_->triangleCount_ * kVertexCountTriangle_;
+//
+//	// vertexDataに座標を代入
+//	vertexTriangle_->vertexData_[index].position = { pos1.x,pos1.y,pos1.z,1.0f };
+//	vertexTriangle_->vertexData_[index].color = HexColorToVector4(color);
+//
+//	vertexTriangle_->vertexData_[index + 1].position = { pos2.x,pos2.y,pos2.z,1.0f };
+//	vertexTriangle_->vertexData_[index + 1].color = HexColorToVector4(color);
+//
+//	vertexTriangle_->vertexData_[index + 2].position = { pos3.x,pos3.y,pos3.z,1.0f };
+//	vertexTriangle_->vertexData_[index + 2].color = HexColorToVector4(color);
+//
+//
+//	// コマンドを積む
+//	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+//	// RootSignatureを設定。PSOに設定してるけど別途設定が必要
+//	commandList->SetGraphicsRootSignature(pipelineSet_->rootSignature_.Get());
+//	commandList->SetPipelineState(pipelineSet_->graphicsPipelineState_.Get());	// PSOを設定
+//	commandList->IASetVertexBuffers(0, 1, &vertexTriangle_->vertexBufferView_);	// VBVを設定
+//	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
+//	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+//	// wvp用のCBufferの場所を設定
+//	commandList->SetGraphicsRootConstantBufferView(0, vertexTriangle_->vertexResource_->GetGPUVirtualAddress());
+//	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス
+//	commandList->DrawInstanced(kVertexCountTriangle_, 1, vertexTriangle_->triangleCount_ * 3, 0);
+//
+//	// 描画数+1
+//	vertexTriangle_->triangleCount_++;
+//}
 
-void CanvasTool::DrawTriangle(Vector3 pos1, Vector3 pos2, Vector3 pos3, unsigned int color) {
+void CanvasTool::DrawTriangle(const Triangle& triangle) {
 
 	// 最大数を超えていないかチェック
 	assert(vertexTriangle_->triangleCount_ < kMaxTriangleCount_);
@@ -63,14 +99,9 @@ void CanvasTool::DrawTriangle(Vector3 pos1, Vector3 pos2, Vector3 pos3, unsigned
 	int index = vertexTriangle_->triangleCount_ * kVertexCountTriangle_;
 
 	// vertexDataに座標を代入
-	vertexTriangle_->vertexData_[index].position = { pos1.x,pos1.y,pos1.z,1.0f };
-	vertexTriangle_->vertexData_[index].color = HexColorToVector4(color);
-
-	vertexTriangle_->vertexData_[index + 1].position = { pos2.x,pos2.y,pos2.z,1.0f };
-	vertexTriangle_->vertexData_[index + 1].color = HexColorToVector4(color);
-
-	vertexTriangle_->vertexData_[index + 2].position = { pos3.x,pos3.y,pos3.z,1.0f };
-	vertexTriangle_->vertexData_[index + 2].color = HexColorToVector4(color);
+	vertexTriangle_->triangleData_[index] = triangle;
+	vertexTriangle_->triangleData_[index + 1] = triangle;
+	vertexTriangle_->triangleData_[index + 2] = triangle;
 
 
 	// コマンドを積む
@@ -89,6 +120,7 @@ void CanvasTool::DrawTriangle(Vector3 pos1, Vector3 pos2, Vector3 pos3, unsigned
 	// 描画数+1
 	vertexTriangle_->triangleCount_++;
 }
+
 
 
 #pragma endregion
@@ -254,7 +286,7 @@ void CanvasTool::CreateVertexTriangleBufferView() {
 	// リソースの先頭アドレスから使う
 	vertexTriangle_->vertexBufferView_.BufferLocation = vertexTriangle_->vertexResource_.Get()->GetGPUVirtualAddress();
 	// 使用するリソースのサイズ
-	vertexTriangle_->vertexBufferView_.SizeInBytes = sizeof(VectorPosColor) * kMaxTriangleCount_ * kVertexCountTriangle_;
+	vertexTriangle_->vertexBufferView_.SizeInBytes = sizeof() * kMaxTriangleCount_ * kVertexCountTriangle_;
 	// 1頂点あたりのサイズ
 	vertexTriangle_->vertexBufferView_.StrideInBytes = sizeof(VectorPosColor);
 }
