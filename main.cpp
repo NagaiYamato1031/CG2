@@ -1462,8 +1462,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 				ImGui::TreePop();
 			}
 
-			ImGui::DragFloat3("DirectionalLight", &directionalLightData->direction.x, 0.01f);
-			directionalLightData->direction = Mymath::Normalize(directionalLightData->direction);
+			if (ImGui::TreeNode("DirectionalLight")) {
+				ImGui::DragFloat3("Direction", &directionalLightData->direction.x, 0.01f);
+				directionalLightData->direction = Mymath::Normalize(directionalLightData->direction);
+				ImGui::ColorEdit4("Color", &directionalLightData->color.x);
+
+				ImGui::SliderFloat("Intensity", &directionalLightData->intensity, 0, 10.0f);
+
+			}
+
 
 			ImGui::End();
 
