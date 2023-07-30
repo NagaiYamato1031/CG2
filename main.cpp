@@ -1042,6 +1042,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// Sprite 用の頂点リソースを作る
 	ID3D12Resource* vertexResourceSprite = CreateBufferResource(device, sizeof(VertexData) * 6);
 
+	// Triangle 用の頂点リソース
+	ID3D12Resource* vertexResourceTriangle = CreateBufferResource(device, sizeof(VertexData) * 3);
 
 #pragma endregion
 
@@ -1064,6 +1066,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	vertexBufferViewSprite.SizeInBytes = sizeof(VertexData) * 6;
 	// 1 頂点当たりのサイズ
 	vertexBufferViewSprite.StrideInBytes = sizeof(VertexData);
+
+	// 三角形用の VBV
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewTriangle{};
+	vertexBufferViewTriangle.BufferLocation = vertexResourceTriangle->GetGPUVirtualAddress();
+	// 頂点三つ
+	vertexBufferViewTriangle.SizeInBytes = sizeof(VertexData) * 3;
+	// 一頂点のサイズ
 
 
 #pragma endregion
