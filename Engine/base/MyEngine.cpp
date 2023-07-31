@@ -40,7 +40,12 @@ void MyEngine::EndFrame() {
 #pragma region 描画関数
 
 void MyEngine::DrawTriangle(Vector3 pos1, Vector3 pos2, Vector3 pos3, unsigned int color) {
-	canvasTool_->DrawTriangle(pos1, pos2, pos3, color);
+	pos1;
+	pos2;
+	pos3;
+	color;
+	
+	//canvasTool_->DrawTriangle(pos1, pos2, pos3, color);
 }
 
 void MyEngine::DrawTriangle(const Triangle& triangle) {

@@ -4,7 +4,6 @@
 #include "./MyUtility.h"
 #include "../math/Mymath.h"
 
-
 CanvasTool* CanvasTool::GetInstance() {
 	static CanvasTool instance;
 	return &instance;
@@ -99,9 +98,9 @@ void CanvasTool::DrawTriangle(const Triangle& triangle) {
 	int index = vertexTriangle_->triangleCount_ * kVertexCountTriangle_;
 
 	// vertexDataに座標を代入
-	vertexTriangle_->triangleData_[index] = triangle;
-	vertexTriangle_->triangleData_[index + 1] = triangle;
-	vertexTriangle_->triangleData_[index + 2] = triangle;
+	vertexTriangle_->triangleData_[index] = triangle.vertices[0];
+	vertexTriangle_->triangleData_[index + 1] = triangle.vertices[1];
+	vertexTriangle_->triangleData_[index + 2] = triangle.vertices[2];
 
 
 	// コマンドを積む
@@ -113,7 +112,7 @@ void CanvasTool::DrawTriangle(const Triangle& triangle) {
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// wvp用のCBufferの場所を設定
-	commandList->SetGraphicsRootConstantBufferView(0, vertexTriangle_->vertexResource_->GetGPUVirtualAddress());
+	commandList->SetGraphicsRootConstantBufferView(0, triangle.GetResource()->GetGPUVirtualAddress());
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス
 	commandList->DrawInstanced(kVertexCountTriangle_, 1, vertexTriangle_->triangleCount_ * 3, 0);
 
@@ -286,19 +285,19 @@ void CanvasTool::CreateVertexTriangleBufferView() {
 	// リソースの先頭アドレスから使う
 	vertexTriangle_->vertexBufferView_.BufferLocation = vertexTriangle_->vertexResource_.Get()->GetGPUVirtualAddress();
 	// 使用するリソースのサイズ
-	vertexTriangle_->vertexBufferView_.SizeInBytes = sizeof() * kMaxTriangleCount_ * kVertexCountTriangle_;
+	vertexTriangle_->vertexBufferView_.SizeInBytes = sizeof(Triangle::VectorPosColor) * kMaxTriangleCount_ * kVertexCountTriangle_;
 	// 1頂点あたりのサイズ
-	vertexTriangle_->vertexBufferView_.StrideInBytes = sizeof(VectorPosColor);
+	vertexTriangle_->vertexBufferView_.StrideInBytes = sizeof(Triangle::VectorPosColor);
 }
 
 void CanvasTool::CreateVertexTriangle() {
 
 	vertexTriangle_ = std::make_unique<VertexTriangle>();
 
-	vertexTriangle_->vertexResource_ = CreateBufferResource(sizeof(VectorPosColor) * kMaxTriangleCount_ * kVertexCountTriangle_);
+	vertexTriangle_->vertexResource_ = CreateBufferResource(sizeof(Triangle::VectorPosColor) * kMaxTriangleCount_ * kVertexCountTriangle_);
 	CreateVertexTriangleBufferView();
 	// 書き込むためのアドレスを取得
-	vertexTriangle_->vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexTriangle_->vertexData_));
+	vertexTriangle_->vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexTriangle_->triangleData_));
 }
 
 

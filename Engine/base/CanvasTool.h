@@ -77,7 +77,7 @@ private:
 	struct VertexTriangle {
 		Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource_;	// GPU上の頂点データの格納場所
 		D3D12_VERTEX_BUFFER_VIEW vertexBufferView_{};			// BufferLocationは頂点データ格納場所のアドレス
-		Triangle* triangleData_ = nullptr;						// 三角形の頂点と色リソース
+		Triangle::VectorPosColor* triangleData_ = nullptr;		// 三角形の頂点と色リソース
 		uint32_t triangleCount_ = 0;							// 三角形の描画数
 	};
 

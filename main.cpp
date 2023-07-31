@@ -12,22 +12,34 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Triangle triangle;
 	triangle.Initialize();
 
-	triangle.vertices[0] = { -0.5f,-0.5f,0.0f };
-	triangle.vertices[1] = { 0.0f,0.5f,0.0f };
-	triangle.vertices[2] = { 0.5f,-0.5f,0.0f };
+	triangle.vertices[0] = { .position{-0.5f,-0.5f,0.0f},.color{1.0f,1.0f,1.0f,1.0f} };
+	triangle.vertices[1] = { .position{0.0f,0.5f,0.0f},.color{1.0f,1.0f,1.0f,1.0f} };
+	triangle.vertices[2] = { .position{0.5f,-0.5f,0.0f},.color{1.0f,1.0f,1.0f,1.0f} };
 
 
 	while (MyEngine::ProcessMessage())
 	{
 		MyEngine::BeginFrame();
 
+		Vector3 rotate = triangle.GetRotate();
+		Vector3 trans = triangle.GetTranslation();
 
-		MyEngine::DrawTriangle(
-			{ -0.5f,-0.5f,0.0f },
-			{ 0.0f,0.5f,0.0f },
-			{ 0.5f,-0.5f,0.0f },
-			0xFFFFFFFF
-		);
+		rotate.y += 0.01f;
+		trans.x += 0.001f;
+
+		triangle.SetRotate(rotate);
+		triangle.SetTranslation(trans);
+		triangle.UpdateMatrix();
+
+		//MyEngine::DrawTriangle(
+		//	{ -0.5f,-0.5f,0.0f },
+		//	{ 0.0f,0.5f,0.0f },
+		//	{ 0.5f,-0.5f,0.0f },
+		//	0xFFFFFFFF
+		//);
+
+
+		MyEngine::DrawTriangle(triangle);
 
 		MyEngine::EndFrame();
 	}

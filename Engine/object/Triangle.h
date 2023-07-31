@@ -18,6 +18,7 @@ public:
 		Vector3 position;	// 座標
 		Vector4 color;		// 色
 	};
+
 public:
 
 	// 座標と色
