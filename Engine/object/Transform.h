@@ -26,10 +26,6 @@ public:
 	/// 初期化
 	/// </summary>
 	virtual void Initialize();
-	/// <summary>
-	/// 純粋仮想初期化関数
-	/// </summary>
-	virtual void SuccessorInitialize() = 0;
 
 	/// <summary>
 	/// 行列更新
@@ -55,7 +51,7 @@ public:
 
 #pragma endregion
 
-protected:
+public:
 
 	// スケール
 	Vector3 scale_ = { 1,1,1 };
@@ -87,7 +83,6 @@ public:
 	/// 初期化
 	/// </summary>
 	void Initialize() override;
-	virtual void SuccessorInitialize() = 0;
 
 	/// <summary>
 	/// 行列更新
@@ -117,7 +112,9 @@ private:
 	};*/
 	struct CBuffer
 	{
+		// WVP を変換するためのリソース
 		Microsoft::WRL::ComPtr<ID3D12Resource> resource_;
+		// WVP のデータ
 		Matrix4x4* wvpData_;
 	};
 

@@ -1,3 +1,11 @@
+/*	手を付け加える場所
+* 
+* ・基底図形クラスを作る
+* ・スクリーン座標上を指定できる Draw 関数を作る
+* 
+*/
+
+
 #include "./Engine/base/MyConst.h"
 #include "./Engine/math/Mymath.h"
 
@@ -21,15 +29,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	{
 		MyEngine::BeginFrame();
 
-		Vector3 rotate = triangle.GetRotate();
-		Vector3 trans = triangle.GetTranslation();
-
-		rotate.y += 0.01f;
-		trans.x += 0.001f;
-
-		triangle.SetRotate(rotate);
-		triangle.SetTranslation(trans);
-		triangle.UpdateMatrix();
+		triangle.transform_.rotate_.y += 0.01f;
+		triangle.transform_.rotate_.y = triangle.transform_.rotate_.y > 3.14f * 2.0f ? 0 : triangle.transform_.rotate_.y;
 
 		//MyEngine::DrawTriangle(
 		//	{ -0.5f,-0.5f,0.0f },

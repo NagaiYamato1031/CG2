@@ -2,6 +2,8 @@
 #include "../math/Mymath.h"
 #include "../base/CanvasTool.h"
 
+#pragma region Transform
+
 Transform::Transform() {
 	scale_ = { 1.0f,1.0f,1.0f };
 	rotate_ = { 0.0f,0.0f,0.0f };
@@ -16,17 +18,21 @@ void Transform::Initialize() {
 	translation_ = { 0.0f,0.0f,0.0f };
 	matWorld_ = Mymath::MakeIdentity4x4();
 	parent_ = nullptr;
-	SuccessorInitialize();
 }
 void Transform::UpdateMatrix() {
 	matWorld_ = Mymath::MakeAffineMatrix(scale_, rotate_, translation_);
 	// 親があれば親を掛ける
 	if (parent_ != nullptr) {
-		matWorld_ = Mymath::Multiply(matWorld_, parent_->matWorld_);
+		matWorld_ = Mymath::Multiply(parent_->matWorld_, matWorld_);
 	}
 }
 
+#pragma endregion
+
 #pragma region Transform 派生クラス
+
+
+#pragma region TransformEx
 
 TransformEx::TransformEx() {
 	scale_ = { 1.0f,1.0f,1.0f };
@@ -42,7 +48,6 @@ void TransformEx::Initialize() {
 	translation_ = { 0.0f,0.0f,0.0f };
 	matWorld_ = Mymath::MakeIdentity4x4();
 	parent_ = nullptr;
-	SuccessorInitialize();
 	CreateConstBuffer();
 }
 
@@ -50,7 +55,7 @@ void TransformEx::UpdateMatrix() {
 	matWorld_ = Mymath::MakeAffineMatrix(scale_, rotate_, translation_);
 	// 親があれば親を掛ける
 	if (parent_ != nullptr) {
-		matWorld_ = Mymath::Multiply(matWorld_, parent_->GetMatrix());
+		matWorld_ = Mymath::Multiply(parent_->GetMatrix(), matWorld_);
 	}
 	TransferMatrix();
 }
@@ -73,5 +78,8 @@ void TransformEx::CreateConstBuffer() {
 
 	TransferMatrix();
 }
+
+#pragma endregion
+
 
 #pragma endregion

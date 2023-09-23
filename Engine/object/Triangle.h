@@ -1,7 +1,7 @@
 #pragma once
 #include "./Transform.h"
 
-class Triangle : public TransformEx {
+class Triangle {
 public:
 
 	Triangle();
@@ -9,8 +9,7 @@ public:
 	const Triangle& operator=(const Triangle& obj);
 	~Triangle();
 
-	void SuccessorInitialize() override;
-
+	void Initialize();
 
 public:
 
@@ -20,6 +19,9 @@ public:
 	};
 
 public:
+
+	// ワールド座標データ
+	TransformEx transform_;
 
 	// 座標と色
 	VectorPosColor vertices[3];
