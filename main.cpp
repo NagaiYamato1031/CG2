@@ -5,6 +5,7 @@
 * ・描画を一つのリソースで管理する(していなかったら)
 * ・CanvasTool の vertexTriangle->triangleData の中に色とか頂点とかぶち込んで描画する
 * ・Mymath に集約させている演算子のオーバーロードを各ファイルに移す(class 化も平行する)
+* ・Material クラスを作って描画時の色の設定ができるようにする
 *
 */
 
@@ -34,7 +35,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	{
 		MyEngine::BeginFrame();
 
-		triangle.transform_.rotate_.y += 0.01f;
+		//triangle.transform_.rotate_.y += 0.01f;
 		//triangle.transform_.rotate_.y = triangle.transform_.rotate_.y > 3.14f * 2.0f ? 0 : triangle.transform_.rotate_.y;
 
 		//triangle.vertices[0].position.y += 0.001f;

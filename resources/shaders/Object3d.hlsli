@@ -1,14 +1,14 @@
-//struct Material {
-//	float32_t4 color;
-//};
-//
-//ConstantBuffer<Material> gMaterial : register(b0);
+struct Material {
+	float32_t4 color;
+};
+
+ConstantBuffer<Material> gMaterial : register(b0);
 
 struct TransformationMatrix {
 	float32_t4x4 WVP;
 };
 
-ConstantBuffer<TransformationMatrix> gTransformationMatrix : register(b0);
+ConstantBuffer<TransformationMatrix> gTransformationMatrix : register(b1);
 
 struct VertexShaderOutput {
 	float32_t4 position : SV_POSITION;

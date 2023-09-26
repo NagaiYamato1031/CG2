@@ -96,8 +96,10 @@ void CanvasTool::DrawTriangle(Vector3 pos1, Vector3 pos2, Vector3 pos3, unsigned
 	commandList->IASetVertexBuffers(0, 1, &vertexTriangle_->vertexBufferView_);	// VBVを設定
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// wvp用のCBufferの場所を設定
+	// Material 用のCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(0, vertexTriangle_->vertexResource_->GetGPUVirtualAddress());
+	// wvp 用のCBufferの場所を設定
+	//commandList->SetGraphicsRootConstantBufferView(1, vertexTriangle_->vertexResource_->GetGPUVirtualAddress());
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス
 	commandList->DrawInstanced(kVertexCountTriangle_, 1, vertexTriangle_->triangleCount_ * 3, 0);
 
@@ -169,13 +171,22 @@ void CanvasTool::CreateRootSignature() {
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-	// RootParameter作成。複数設定できるので配列。今回は結果1つなので長さ1の配列
-	D3D12_ROOT_PARAMETER rootParameters[1] = {};
+	// RootParameter作成。複数設定できるので配列。
+	// PixelShader のMaterial と VertexShader の Transform
+	D3D12_ROOT_PARAMETER rootParameters[2] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う
-	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	// VertexlShaderで使う
+	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		// PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0;						// レジスタ番号0とバインド
+	
+	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う
+	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	// VertexlShaderで使う
+	rootParameters[1].Descriptor.ShaderRegister = 1;						// レジスタ番号1とバインド	
+	
+	// 最後に登録する
 	descriptionRootSignature.pParameters = rootParameters;					// ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters);		// 配列の長さ
+
+
 
 	// シリアライズしてバイナリにする
 	ID3DBlob* signatureBlob = nullptr;
