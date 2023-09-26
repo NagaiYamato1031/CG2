@@ -21,7 +21,7 @@ public:
 public:
 
 	// ワールド座標データ
-	TransformEx transform_;
+	WorldTransformEx transform_;
 
 	// 座標と色
 	VectorPosColor vertices[3];

@@ -11,6 +11,13 @@ Transform::Transform() {
 	matWorld_ = Mymath::MakeIdentity4x4();
 	parent_ = nullptr;
 }
+Transform::Transform(Vector3 s, Vector3 r, Vector3 t) {
+	scale_ = s;
+	rotate_ = r;
+	translation_ = t;
+	matWorld_ = Mymath::MakeIdentity4x4();
+	parent_ = nullptr;
+}
 
 void Transform::Initialize() {
 	scale_ = { 1.0f,1.0f,1.0f };
@@ -34,7 +41,7 @@ void Transform::UpdateMatrix() {
 
 #pragma region TransformEx
 
-TransformEx::TransformEx() {
+WorldTransformEx::WorldTransformEx() {
 	scale_ = { 1.0f,1.0f,1.0f };
 	rotate_ = { 0.0f,0.0f,0.0f };
 	translation_ = { 0.0f,0.0f,0.0f };
@@ -42,7 +49,7 @@ TransformEx::TransformEx() {
 	parent_ = nullptr;
 }
 
-void TransformEx::Initialize() {
+void WorldTransformEx::Initialize() {
 	scale_ = { 1.0f,1.0f,1.0f };
 	rotate_ = { 0.0f,0.0f,0.0f };
 	translation_ = { 0.0f,0.0f,0.0f };
@@ -51,7 +58,7 @@ void TransformEx::Initialize() {
 	CreateConstBuffer();
 }
 
-void TransformEx::UpdateMatrix() {
+void WorldTransformEx::UpdateMatrix() {
 	matWorld_ = Mymath::MakeAffineMatrix(scale_, rotate_, translation_);
 	// 親があれば親を掛ける
 	if (parent_ != nullptr) {
@@ -60,12 +67,12 @@ void TransformEx::UpdateMatrix() {
 	TransferMatrix();
 }
 
-void TransformEx::TransferMatrix() {
+void WorldTransformEx::TransferMatrix() {
 	//*cBuffer_->CBData_->wvpData_ = matWorld_;
 	*cBuffer_->wvpData_ = matWorld_;
 }
 
-void TransformEx::CreateConstBuffer() {
+void WorldTransformEx::CreateConstBuffer() {
 	CanvasTool* tool = CanvasTool::GetInstance();
 
 	cBuffer_ = std::make_unique<CBuffer>();

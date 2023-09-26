@@ -19,6 +19,11 @@ public:
 	/// コンストラクタ
 	/// </summary>
 	Transform();
+	Transform(Vector3 s,Vector3 r,Vector3 t);
+	Transform(Vector3 r,Vector3 t);
+	Transform(Vector3 t);
+
+	~Transform() = default;
 
 public:
 
@@ -69,13 +74,18 @@ public:
 /// <summary>
 /// ConstantBuffer への転送を含めた Transform クラス
 /// </summary>
-class TransformEx : public Transform {
+class WorldTransformEx : public Transform {
 public:
 
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
-	TransformEx();
+	WorldTransformEx();
+	WorldTransformEx(Vector3 s, Vector3 r, Vector3 t);
+	WorldTransformEx(Vector3 r, Vector3 t);
+	WorldTransformEx(Vector3 t);
+
+	~WorldTransformEx() = default;
 
 public:
 
@@ -95,6 +105,7 @@ public:
 	void TransferMatrix();
 
 
+	D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress()const { return cBuffer_->resource_.Get()->GetGPUVirtualAddress(); };
 	ID3D12Resource* GetResource()const { return cBuffer_->resource_.Get(); };
 
 private:
@@ -122,5 +133,9 @@ private:
 private:
 	// コンスタントバッファ
 	std::unique_ptr<CBuffer> cBuffer_;
+
+	// リソース
+	//std::unique_ptr<ID3D12Resource> resource_;
+
 
 };

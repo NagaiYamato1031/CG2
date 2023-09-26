@@ -2,6 +2,7 @@
 * 
 * ・基底図形クラスを作る
 * ・スクリーン座標上を指定できる Draw 関数を作る
+* ・描画を一つのリソースで管理する(していなかったら)
 * 
 */
 
@@ -30,7 +31,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		MyEngine::BeginFrame();
 
 		triangle.transform_.rotate_.y += 0.01f;
-		triangle.transform_.rotate_.y = triangle.transform_.rotate_.y > 3.14f * 2.0f ? 0 : triangle.transform_.rotate_.y;
+		//triangle.transform_.rotate_.y = triangle.transform_.rotate_.y > 3.14f * 2.0f ? 0 : triangle.transform_.rotate_.y;
+
+		//triangle.vertices[0].position.y += 0.001f;
+
+		triangle.transform_.UpdateMatrix();
 
 		//MyEngine::DrawTriangle(
 		//	{ -0.5f,-0.5f,0.0f },
