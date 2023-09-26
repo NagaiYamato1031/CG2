@@ -1,9 +1,10 @@
 /*	手を付け加える場所
-* 
+*
 * ・基底図形クラスを作る
 * ・スクリーン座標上を指定できる Draw 関数を作る
 * ・描画を一つのリソースで管理する(していなかったら)
-* 
+* ・CanvasTool の vertexTriangle->triangleData の中に色とか頂点とかぶち込んで描画する
+*
 */
 
 
@@ -21,6 +22,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	Triangle triangle;
 	triangle.Initialize();
 
+	triangle.transform_.CreateResource();
+
 	triangle.vertices[0] = { .position{-0.5f,-0.5f,0.0f},.color{1.0f,1.0f,1.0f,1.0f} };
 	triangle.vertices[1] = { .position{0.0f,0.5f,0.0f},.color{1.0f,1.0f,1.0f,1.0f} };
 	triangle.vertices[2] = { .position{0.5f,-0.5f,0.0f},.color{1.0f,1.0f,1.0f,1.0f} };
@@ -35,7 +38,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		//triangle.vertices[0].position.y += 0.001f;
 
-		triangle.transform_.UpdateMatrix();
+		//triangle.transform_.UpdateMatrix();
 
 		//MyEngine::DrawTriangle(
 		//	{ -0.5f,-0.5f,0.0f },
@@ -45,7 +48,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//);
 
 
-		MyEngine::DrawTriangle(triangle);
+		MyEngine::DrawTriangle({ -0.5f,-0.5f,0.0f }, { 0.0f,0.5f,0.0f }, { 0.5f,-0.5f,0.0f }, 0xFF00FFFF);
+		//MyEngine::DrawTriangle(triangle);
 
 		MyEngine::EndFrame();
 	}

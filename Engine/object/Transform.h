@@ -10,51 +10,52 @@
 #include <memory>
 
 /// <summary>
-/// ワールド空間までの変換を含めた Transform クラス
+/// WorldTransform クラス
 /// </summary>
-class Transform {
+class WorldTransform {
 public:
 
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
-	Transform();
-	Transform(Vector3 s,Vector3 r,Vector3 t);
-	Transform(Vector3 r,Vector3 t);
-	Transform(Vector3 t);
+	WorldTransform();
+	WorldTransform(Vector3 s, Vector3 r, Vector3 t);
+	WorldTransform(Vector3 r, Vector3 t);
+	WorldTransform(Vector3 t);
 
-	~Transform() = default;
+	~WorldTransform() = default;
 
 public:
 
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	virtual void Initialize();
+	void Initialize();
 
 	/// <summary>
-	/// 行列更新
+	/// リソースを作成する
 	/// </summary>
-	virtual void UpdateMatrix();
+	void CreateResource();
 
-#pragma region ゲッターセッター
 
-	void SetScale(const Vector3& scale) { scale_ = scale; };
-	void SetRotate(const Vector3& rotate) { rotate_ = rotate; };
-	void SetTranslation(const Vector3& translation) { translation_ = translation; };
-	/// <summary>
-	/// 親の Transform を決める
-	/// </summary>
-	/// <param name="parent"></param>
-	void SetParent(Transform* parent) { parent_ = parent; };
+	///// <summary>
+	///// 行列更新
+	///// </summary>
+	//void UpdateMatrix();
 
-	const Vector3& GetScale() const { return scale_; };
-	const Vector3& GetTranslation() const { return translation_; };
-	const Vector3& GetRotate() const { return rotate_; };
-	const Matrix4x4& GetMatrix() const { return matWorld_; };
-	Transform* GetParent()const { return parent_; };
+	///// <summary>
+	///// 行列の転送
+	///// </summary>
+	//void TransferMatrix();
 
-#pragma endregion
+public:
+
+	void SetParent(WorldTransform* parent);
+
+	WorldTransform* GetParent() const ;
+	Matrix4x4 GetMatWorld();
+	D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress()const;
+	ID3D12Resource* GetResource()const { return resource_.Get(); };
 
 public:
 
@@ -64,78 +65,19 @@ public:
 	Vector3 rotate_ = { 0,0,0 };
 	// ローカル座標
 	Vector3 translation_ = { 0,0,0 };
-	// ローカル → ワールド変換行列
-	Matrix4x4 matWorld_;
-	// 親の Transform
-	Transform* parent_ = nullptr;
-
-};
-
-/// <summary>
-/// ConstantBuffer への転送を含めた Transform クラス
-/// </summary>
-class WorldTransformEx : public Transform {
-public:
-
-	/// <summary>
-	/// コンストラクタ
-	/// </summary>
-	WorldTransformEx();
-	WorldTransformEx(Vector3 s, Vector3 r, Vector3 t);
-	WorldTransformEx(Vector3 r, Vector3 t);
-	WorldTransformEx(Vector3 t);
-
-	~WorldTransformEx() = default;
-
-public:
-
-	/// <summary>
-	/// 初期化
-	/// </summary>
-	void Initialize() override;
-
-	/// <summary>
-	/// 行列更新
-	/// </summary>
-	void UpdateMatrix() override;
-
-	/// <summary>
-	/// 行列の転送
-	/// </summary>
-	void TransferMatrix();
-
-
-	D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress()const { return cBuffer_->resource_.Get()->GetGPUVirtualAddress(); };
-	ID3D12Resource* GetResource()const { return cBuffer_->resource_.Get(); };
-
-private:
-
-	/// <summary>
-	/// リソースの作成
-	/// </summary>
-	void CreateConstBuffer();
-
-private:
-
-	/*struct ConstantBufferData
-	{
-		Matrix4x4* wvpData_;
-	};*/
-	struct CBuffer
-	{
-		// WVP を変換するためのリソース
-		Microsoft::WRL::ComPtr<ID3D12Resource> resource_;
-		// WVP のデータ
-		Matrix4x4* wvpData_;
-	};
 
 
 private:
 	// コンスタントバッファ
-	std::unique_ptr<CBuffer> cBuffer_;
+	//std::unique_ptr<CBuffer> cBuffer_;
+
+	// ローカル → ワールド変換行列
+	Matrix4x4* matWorld_ = nullptr;
+	// 親の Transform
+	WorldTransform* parent_ = nullptr;
 
 	// リソース
-	//std::unique_ptr<ID3D12Resource> resource_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> resource_;
 
 
 };

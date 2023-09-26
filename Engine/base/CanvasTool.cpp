@@ -69,6 +69,14 @@ void CanvasTool::DrawTriangle(Vector3 pos1, Vector3 pos2, Vector3 pos3, unsigned
 
 	color;
 
+	vertexTriangle_->triangleData_[index].position = pos1;
+	vertexTriangle_->triangleData_[index + 1].position = pos2;
+	vertexTriangle_->triangleData_[index + 2].position = pos3;
+
+	vertexTriangle_->triangleData_[index].color = HexColorToVector4(color);
+	vertexTriangle_->triangleData_[index + 1].color = HexColorToVector4(color);
+	vertexTriangle_->triangleData_[index + 2].color = HexColorToVector4(color);
+
 	//// vertexDataに座標を代入
 	//vertexTriangle_->vertexData_[index].position = { pos1.x,pos1.y,pos1.z,1.0f };
 	//vertexTriangle_->vertexData_[index].color = HexColorToVector4(color);
@@ -120,7 +128,7 @@ void CanvasTool::DrawTriangle(const Triangle& triangle) {
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// wvp用のCBufferの場所を設定
-	commandList->SetGraphicsRootConstantBufferView(0, triangle.transform_.GetResource()->GetGPUVirtualAddress());
+	commandList->SetGraphicsRootConstantBufferView(0, triangle.transform_.GetGPUVirtualAddress());
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス
 	commandList->DrawInstanced(kVertexCountTriangle_, 1, vertexTriangle_->triangleCount_ * 3, 0);
 
