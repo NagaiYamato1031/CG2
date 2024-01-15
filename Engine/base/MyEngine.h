@@ -29,7 +29,7 @@ public:
 	/// <param name="pos3">座標３</param>
 	/// <param name="color">カラー</param>
 	static void DrawTriangle(Vector3 pos1, Vector3 pos2, Vector3 pos3, unsigned int color);
-	static void DrawTriangle(const Triangle& triangle);
+	static void DrawTriangle(Triangle& triangle);
 
 #pragma endregion
 

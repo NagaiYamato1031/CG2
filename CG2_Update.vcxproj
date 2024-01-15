@@ -94,6 +94,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\base\MyUtility.cpp" />
     <ClCompile Include="Engine\base\WinApp.cpp" />
     <ClCompile Include="Engine\math\Mymath.cpp" />
+    <ClCompile Include="Engine\object\IShape.cpp" />
     <ClCompile Include="Engine\object\Transform.cpp" />
     <ClCompile Include="Engine\object\Triangle.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
@@ -104,6 +105,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_tables.cpp" />
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Material.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\base\CanvasTool.h" />
@@ -118,6 +120,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\math\Vector2.h" />
     <ClInclude Include="Engine\math\Vector3.h" />
     <ClInclude Include="Engine\math\Vector4.h" />
+    <ClInclude Include="Engine\object\IShape.h" />
     <ClInclude Include="Engine\object\Transform.h" />
     <ClInclude Include="Engine\object\Triangle.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
@@ -128,6 +131,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
+    <ClInclude Include="Material.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

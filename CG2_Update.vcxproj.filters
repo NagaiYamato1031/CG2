@@ -23,6 +23,9 @@
     <Filter Include="MyEngines\Object">
       <UniqueIdentifier>{c4ef806a-e154-4996-9b01-585cf63af37e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MyEngines\Object\2D">
+      <UniqueIdentifier>{6052f82b-3b85-4aed-8e74-51eef14c3069}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -69,8 +72,12 @@
       <Filter>MyEngines\Object</Filter>
     </ClCompile>
     <ClCompile Include="Engine\object\Triangle.cpp">
+      <Filter>MyEngines\Object\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\object\IShape.cpp">
       <Filter>MyEngines\Object</Filter>
     </ClCompile>
+    <ClCompile Include="Material.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -137,8 +144,12 @@
       <Filter>MyEngines\Object</Filter>
     </ClInclude>
     <ClInclude Include="Engine\object\Triangle.h">
+      <Filter>MyEngines\Object\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\object\IShape.h">
       <Filter>MyEngines\Object</Filter>
     </ClInclude>
+    <ClInclude Include="Material.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">

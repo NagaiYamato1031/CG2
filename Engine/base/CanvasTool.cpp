@@ -14,7 +14,7 @@ void CanvasTool::Initialize(DirectXCommon* directXCommon) {
 
 	InitializeDXC();
 	CreateGraphicsPipeLineState();
-	//CreateConstantBuffer();
+	CreateConstantBuffer();
 	CreateVertexTriangle();
 }
 
@@ -97,9 +97,9 @@ void CanvasTool::DrawTriangle(Vector3 pos1, Vector3 pos2, Vector3 pos3, unsigned
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// Material 用のCBufferの場所を設定
-	commandList->SetGraphicsRootConstantBufferView(0, vertexTriangle_->vertexResource_->GetGPUVirtualAddress());
+	//commandList->SetGraphicsRootConstantBufferView(0, vertexTriangle_->vertexResource_->GetGPUVirtualAddress());
 	// wvp 用のCBufferの場所を設定
-	//commandList->SetGraphicsRootConstantBufferView(1, vertexTriangle_->vertexResource_->GetGPUVirtualAddress());
+	commandList->SetGraphicsRootConstantBufferView(1, cBuffer_->wvpResource_->GetGPUVirtualAddress());
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス
 	commandList->DrawInstanced(kVertexCountTriangle_, 1, vertexTriangle_->triangleCount_ * 3, 0);
 
@@ -107,7 +107,7 @@ void CanvasTool::DrawTriangle(Vector3 pos1, Vector3 pos2, Vector3 pos3, unsigned
 	vertexTriangle_->triangleCount_++;
 }
 
-void CanvasTool::DrawTriangle(const Triangle& triangle) {
+void CanvasTool::DrawTriangle(Triangle& triangle) {
 
 	// 最大数を超えていないかチェック
 	assert(vertexTriangle_->triangleCount_ < kMaxTriangleCount_);
@@ -129,6 +129,10 @@ void CanvasTool::DrawTriangle(const Triangle& triangle) {
 	commandList->IASetVertexBuffers(0, 1, &vertexTriangle_->vertexBufferView_);	// VBVを設定
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// 試しに行列更新
+	triangle.transform_.GetMatWorld();
+
 	// wvp用のCBufferの場所を設定
 	commandList->SetGraphicsRootConstantBufferView(0, triangle.transform_.GetGPUVirtualAddress());
 	// 描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス
@@ -177,11 +181,11 @@ void CanvasTool::CreateRootSignature() {
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		// PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0;						// レジスタ番号0とバインド
-	
+
 	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		// CBVを使う
 	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	// VertexlShaderで使う
 	rootParameters[1].Descriptor.ShaderRegister = 1;						// レジスタ番号1とバインド	
-	
+
 	// 最後に登録する
 	descriptionRootSignature.pParameters = rootParameters;					// ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters);		// 配列の長さ
@@ -300,7 +304,7 @@ void CanvasTool::CreateConstantBuffer() {
 	// wvpのリソースを作る。サイズはMatrix4x4 1つ分
 	cBuffer_->wvpResource_ = CreateBufferResource(sizeof(Matrix4x4));
 	// データを書き込む
-	cBuffer_->wvpData_ = nullptr;
+	cBuffer_->wvpData_ = new Matrix4x4;
 	// 書き込むためのアドレスを取得
 	cBuffer_->wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&cBuffer_->wvpData_));
 	// 単位行列を書き込んでおく
