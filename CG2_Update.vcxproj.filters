@@ -47,8 +47,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Object3d.VS.hlsl" />
     <FxCompile Include="Object3d.PS.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="Object3d.VS.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
   </ItemGroup>
@@ -90,6 +92,8 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Object3d.hlsli" />
+    <None Include="Object3d.hlsli">
+      <Filter>リソース ファイル</Filter>
+    </None>
   </ItemGroup>
 </Project>
